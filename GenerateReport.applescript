@@ -3,8 +3,8 @@
 
 on run
     -- Set file paths
-    set logFilePath to "~/Desktop/hacktivity_log.txt"
-    set reportFilePath to "~/Desktop/hacktivity_report.txt"
+    set logFilePath to "~/Desktop/timedeck_log.txt"
+    set reportFilePath to "~/Desktop/timedeck_report.txt"
     
     try
         -- Read the log file

@@ -3,7 +3,7 @@
 
 on run
     -- Set the path to the activities log file
-    set logFilePath to "~/Desktop/hacktivity_log.txt"
+    set logFilePath to "~/Desktop/timedeck_log.txt"
     
     -- Confirm with user before clearing
     display dialog "Are you sure you want to clear all activity data and start fresh?" with title "Start Fresh" buttons {"Cancel", "Clear All Data"} default button "Cancel" with icon caution

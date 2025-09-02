@@ -3,7 +3,7 @@
 
 on run
     -- Set the path to the activities log file
-    set logFilePath to "~/Desktop/hacktivity_log.txt"
+    set logFilePath to "~/Desktop/timedeck_log.txt"
     
     try
         -- Read the log file using shell script
@@ -28,7 +28,7 @@ on run
                         set logContents to do shell script "cat " & logFilePath
                         
                         -- Show notification that we ended the open activity
-                        display notification "Open activity automatically ended for day summary" with title "Hacktivity - End Day"
+                        display notification "Open activity automatically ended for day summary" with title "TimeDeck - End Day"
                     end if
                 end if
             end if

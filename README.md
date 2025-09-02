@@ -1,6 +1,6 @@
-# Hacktivity - Activity Tracking for StreamDeck
+# TimeDeck - Activity Tracking for Mac
 
-A simple AppleScript-based activity tracking system designed to work with StreamDeck for granular time tracking throughout your day.
+A beautiful and intuitive activity tracking system with a native Mac menu bar app for granular time tracking throughout your day.
 
 ## Files
 
@@ -9,10 +9,32 @@ A simple AppleScript-based activity tracking system designed to work with Stream
 - `EndDay.applescript` - Calculates and displays time spent on each activity for the current day
 - `GenerateReport.applescript` - Creates detailed multi-day reports with activity sessions
 - `StartFresh.applescript` - Clears all activity data to start fresh
-- `hacktivity_log.txt` - Data file (created automatically on Desktop)
-- `hacktivity_report.txt` - Generated report file (created on Desktop)
+- `timedeck_log.txt` - Data file (created automatically on Desktop)
+- `timedeck_report.txt` - Generated report file (created on Desktop)
+- `timedeck_menubar.py` - Python-based menu bar app (main app)
+- `create_timedeck_dmg.sh` - Create professional DMG installer
+- `launch_menubar.sh` - Launch script for menu bar app
+- `assets/` - Professional app icons
+- `icons/` - Generated icon files for different uses
+- `requirements.txt` - Python dependencies
 
 ## Setup
+
+### Menu Bar App (Recommended)
+
+TimeDeck features a beautiful native Mac menu bar app with your custom icons:
+
+#### Quick Install (DMG)
+1. Download and open `TimeDeck-1.0.0.dmg`
+2. Drag `TimeDeck.app` to Applications
+3. Launch TimeDeck - dependencies install automatically
+4. Beautiful custom icon appears in your menu bar
+
+#### Manual Install
+1. Run: `./launch_menubar.sh`
+2. Or directly: `python3 timedeck_menubar.py`
+3. Shows current activity with real-time duration tracking
+4. Professional custom icons and interface
 
 ### For StreamDeck
 
@@ -140,3 +162,14 @@ Where the first number is a UNIX timestamp and the rest is either the activity n
 - The last activity of the day is assumed to continue until you run "End Day" (unless explicitly ended)
 - Log file is stored on Desktop for easy access and backup
 - Generated reports are also saved on Desktop for easy review and archiving
+
+## Distribution
+
+Want to share Hacktivity with others? See `DISTRIBUTION.md` for complete packaging options:
+
+- **DMG installer** (most Mac-native, recommended)
+- **Simple installer script** (command-line friendly)
+- **Standalone executable** (no Python required)
+- **Pip package** (for Python developers)
+
+Quick start: Run `./create_timedeck_dmg.sh` to create a professional Mac installer.
