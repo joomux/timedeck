@@ -52,6 +52,8 @@ python3 timedeck_menubar.py
 ### Menu Bar App
 - **Custom icons** - Professional design using your provided assets
 - **Live activity tracking** - See current activity and duration in real-time
+- **Configurable shortcuts** - Customize global hotkeys to your preference
+- **Preferences system** - User-friendly configuration interface
 - **Native Mac experience** - Proper app bundle with metadata
 - **Auto-start capability** - Add to Login Items for automatic startup
 - **Intuitive interface** - Click menu bar icon to access all functions
@@ -79,10 +81,32 @@ python3 timedeck_menubar.py
 5. Use "End Activity" for breaks or "New Activity" to switch tasks
 6. Generate daily summaries with "End Day Summary"
 
+### Keyboard Shortcuts
+**Menu Shortcuts** (when TimeDeck menu is open):
+- `Cmd+N` - New Activity
+- `Cmd+E` - End Activity  
+- `Cmd+D` - End Day Summary
+- `Cmd+R` - Generate Report
+
+**Global Shortcuts** (configurable, work from anywhere):
+- Default: `Cmd+Shift+N` - New Activity
+- Default: `Cmd+Shift+E` - End Activity
+- Default: `Cmd+Shift+D` - End Day Summary
+
+**Customization:**
+- Click "Preferences" in the menu to configure shortcuts individually
+- **Keyboard capture mode:** Press actual keys to set shortcuts
+- **Manual input mode:** Type shortcuts like `cmd+alt+n`
+- Individual dialogs for each shortcut with clear descriptions
+- Real-time key capture with confirmation
+- Examples: `cmd+alt+n`, `ctrl+shift+e`, `cmd+option+d`
+- Supports cmd, ctrl, alt/option, shift modifiers with any letter or number
+
 ### StreamDeck Integration (Optional)
 Configure StreamDeck buttons to run AppleScript files:
 - **App:** `/usr/bin/osascript`
-- **Arguments:** `/path/to/NewActivity.applescript "Activity Name"`
+- **Arguments (DMG install):** `/Applications/TimeDeck.app/Contents/Scripts/NewActivity.applescript "Activity Name"`
+- **Arguments (manual):** `/path/to/NewActivity.applescript "Activity Name"`
 
 ### Terminal Usage (Development)
 ```bash
@@ -127,6 +151,25 @@ Format: `[UNIX_TIMESTAMP] [ACTIVITY_NAME_OR_END]`
 - Run `./convert_icons.sh` to generate all required formats
 - App icon: High-resolution PNG for app bundle and Dock
 - Menu bar icon: Optimized for 22px menu bar display
+
+### Keyboard Shortcut Configuration
+
+**Two Configuration Modes:**
+
+1. **Keyboard Capture (Recommended):**
+   - Click "Capture Keys" when configuring
+   - Press your desired key combination
+   - Keys are automatically detected and formatted
+   - Escape to cancel capture
+
+2. **Manual Input:**
+   - Click "Type Manually" when configuring
+   - Enter shortcuts in format: `cmd+shift+n`
+   - Examples: `cmd+alt+e`, `ctrl+shift+d`
+
+**Valid modifiers:** cmd, ctrl, alt, option, shift  
+**Valid keys:** a-z, 0-9, space, tab, enter  
+**Validation:** Real-time validation with helpful error messages
 
 ### Requirements
 - **macOS 10.14+** for app bundle
