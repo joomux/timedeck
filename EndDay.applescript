@@ -2,12 +2,13 @@
 -- This script calculates time spent on each activity for the current day
 
 on run
-    -- Set the path to the activities log file
-    set logFilePath to "~/Desktop/timedeck_log.txt"
+    -- Set the path to the activities log file (get actual home directory)
+    set homeDir to do shell script "echo $HOME"
+    set logFilePath to homeDir & "/Desktop/timedeck_log.txt"
     
     try
         -- Read the log file using shell script
-        set logContents to do shell script "cat " & logFilePath
+        set logContents to do shell script "cat " & quoted form of logFilePath
         
         -- Check if there's an open activity and end it first
         set logLines to paragraphs of logContents
@@ -22,10 +23,10 @@ on run
                         -- Get current timestamp and add END marker
                         set currentTimestamp to do shell script "date +%s"
                         set endEntry to currentTimestamp & " END"
-                        do shell script "printf '%s\\n' " & quoted form of endEntry & " >> " & logFilePath
+                        do shell script "printf '%s\\n' " & quoted form of endEntry & " >> " & quoted form of logFilePath
                         
                         -- Re-read the log file to include the END marker
-                        set logContents to do shell script "cat " & logFilePath
+                        set logContents to do shell script "cat " & quoted form of logFilePath
                         
                         -- Show notification that we ended the open activity
                         display notification "Open activity automatically ended for day summary" with title "TimeDeck - End Day"

@@ -130,14 +130,27 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     @objc func startFresh() {
         let alert = NSAlert()
         alert.messageText = "Start Fresh"
-        alert.informativeText = "This will clear all activity data. Are you sure?"
-        alert.alertStyle = .warning
-        alert.addButton(withTitle: "Yes, Clear All Data")
+        alert.informativeText = "This will permanently delete all activity data and cannot be undone. Are you sure?"
+        alert.alertStyle = .critical
+        alert.addButton(withTitle: "Clear All Data")
         alert.addButton(withTitle: "Cancel")
         
         let response = alert.runModal()
         if response == .alertFirstButtonReturn {
-            runAppleScript("StartFresh")
+            // Clear the files directly from Swift to ensure it works
+            let homeDir = FileManager.default.homeDirectoryForCurrentUser
+            let logFile = homeDir.appendingPathComponent("Desktop/timedeck_log.txt")
+            let reportFile = homeDir.appendingPathComponent("Desktop/timedeck_report.txt")
+            
+            // Remove the files
+            try? FileManager.default.removeItem(at: logFile)
+            try? FileManager.default.removeItem(at: reportFile)
+            
+            // Show success message
+            showAlert(title: "Data Cleared Successfully", 
+                     message: "✅ All activity data has been cleared.\n\nYou can now start tracking fresh activities.")
+            
+            // Update the current activity display
             updateCurrentActivity()
         }
     }
@@ -179,29 +192,41 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     }
     
     func runAppleScript(_ scriptName: String, args: [String] = []) {
-        // Get the bundle's Scripts directory
-        guard let scriptsPath = Bundle.main.path(forResource: scriptName, ofType: "applescript") else {
-            // Fallback to current directory for development
-            let currentDir = FileManager.default.currentDirectoryPath
-            let scriptPath = "\(currentDir)/\(scriptName).applescript"
+        // Try to find script in the bundle's Scripts directory first
+        let bundlePath = Bundle.main.bundlePath
+        let scriptsDir = "\(bundlePath)/Contents/Scripts"
+        let scriptPath = "\(scriptsDir)/\(scriptName).applescript"
+        
+        if FileManager.default.fileExists(atPath: scriptPath) {
             executeScript(at: scriptPath, args: args)
             return
         }
         
-        executeScript(at: scriptsPath, args: args)
+        // Fallback to current directory for development
+        let currentDir = FileManager.default.currentDirectoryPath
+        let fallbackPath = "\(currentDir)/\(scriptName).applescript"
+        executeScript(at: fallbackPath, args: args)
     }
     
     func executeScript(at path: String, args: [String]) {
-        var command = ["/usr/bin/osascript", path]
-        command.append(contentsOf: args)
-        
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
         process.arguments = [path] + args
         
+        // Capture errors for user feedback
+        let errorPipe = Pipe()
+        process.standardError = errorPipe
+        
         do {
             try process.run()
             process.waitUntilExit()
+            
+            // Check for errors
+            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+            if let errorOutput = String(data: errorData, encoding: .utf8), !errorOutput.isEmpty {
+                showAlert(title: "Script Error", message: "Script failed: \(errorOutput)")
+            }
+            
         } catch {
             showAlert(title: "Error", message: "Failed to run script: \(error.localizedDescription)")
         }

@@ -2,13 +2,14 @@
 -- This script creates a detailed report of all activity data grouped by date
 
 on run
-    -- Set file paths
-    set logFilePath to "~/Desktop/timedeck_log.txt"
-    set reportFilePath to "~/Desktop/timedeck_report.txt"
+    -- Set file paths (get actual home directory)
+set homeDir to do shell script "echo $HOME"
+set logFilePath to homeDir & "/Desktop/timedeck_log.txt"
+set reportFilePath to homeDir & "/Desktop/timedeck_report.txt"
     
     try
         -- Read the log file
-        set logContents to do shell script "cat " & logFilePath
+        set logContents to do shell script "cat " & quoted form of logFilePath
         
         -- Parse all log entries
         set allEntries to {}
@@ -65,15 +66,15 @@ on run
         set reportContent to my formatReport(dailyReports)
         
         -- Write report to file
-        do shell script "printf '%s' " & quoted form of reportContent & " > " & reportFilePath
+        do shell script "printf '%s' " & quoted form of reportContent & " > " & quoted form of reportFilePath
         
         -- Show completion message
-        display notification "Activity report generated successfully!" with title "Hacktivity Report"
-        display dialog "Activity report has been generated and saved to:" & return & return & "~/Desktop/hacktivity_report.txt" & return & return & "The report contains detailed activity sessions grouped by date with start times and durations." with title "Report Generated" buttons {"Open Report", "OK"} default button "OK"
+        display notification "Activity report generated successfully!" with title "TimeDeck Report"
+        display dialog "Activity report has been generated and saved to:" & return & return & "~/Desktop/timedeck_report.txt" & return & return & "The report contains detailed activity sessions grouped by date with start times and durations." with title "Report Generated" buttons {"Open Report", "OK"} default button "OK"
         
         set dialogResult to result
         if button returned of dialogResult is "Open Report" then
-            do shell script "open -t " & reportFilePath
+            do shell script "open -t " & quoted form of reportFilePath
         end if
         
     on error errMsg

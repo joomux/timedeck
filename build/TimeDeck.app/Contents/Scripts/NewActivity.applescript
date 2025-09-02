@@ -25,12 +25,13 @@ on run argv
     -- Create log entry
     set logEntry to currentTimestamp & " " & activityName
     
-    -- Set the path to the activities log file
-    set logFilePath to "~/Desktop/timedeck_log.txt"
+    -- Set the path to the activities log file (get actual home directory)
+    set homeDir to do shell script "echo $HOME"
+    set logFilePath to homeDir & "/Desktop/timedeck_log.txt"
     
     try
         -- Append to the log file using printf for safer escaping
-        do shell script "printf '%s\\n' " & quoted form of logEntry & " >> " & logFilePath
+        do shell script "printf '%s\\n' " & quoted form of logEntry & " >> " & quoted form of logFilePath
         
         -- Show confirmation
         display notification "Activity logged: " & activityName with title "TimeDeck"
