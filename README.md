@@ -5,27 +5,30 @@ A beautiful and intuitive activity tracking system with a native Mac menu bar ap
 ## 🚀 Quick Start
 
 ### Professional DMG Installer (Recommended)
-1. Download `TimeDeck-1.0.0.dmg`
+1. Download `TimeDeck-0.0.1.dmg`
 2. Open the DMG and drag `TimeDeck.app` to Applications
 3. Launch TimeDeck from Applications or Spotlight
 4. Your custom menu bar icon appears automatically
-5. Dependencies install automatically on first run
+5. Start tracking activities immediately - no setup required!
 
 ### Manual Development Setup
 ```bash
-# Clone and run
-python3 timedeck_menubar.py
+# Clone and build
+./build_app.sh
 
-# Or use the launch script
-./launch_menubar.sh
+# Run the app
+open build/TimeDeck.app
+
+# Or compile directly
+swiftc -o TimeDeck TimeDeck.swift && ./TimeDeck
 ```
 
 ## 📁 Project Structure
 
 **Core Application:**
-- `timedeck_menubar.py` - Main menu bar app with custom icons
-- `launch_menubar.sh` - Launch script for development
-- `requirements.txt` - Python dependencies (rumps)
+- `TimeDeck.swift` - Native Swift menu bar app with custom icons
+- `build_app.sh` - Build script for development
+- `create_dmg.sh` - DMG distribution builder
 
 **AppleScript Functions:**
 - `NewActivity.applescript` - Log a new activity with timestamp
@@ -89,24 +92,73 @@ python3 timedeck_menubar.py
 - Generate Report - Create detailed report
 - About - Version and author information
 
-### StreamDeck Integration (Optional)
-Configure StreamDeck buttons to run AppleScript files:
-- **App:** `/usr/bin/osascript`
-- **Arguments (DMG install):** `/Applications/TimeDeck.app/Contents/Scripts/NewActivity.applescript "Activity Name"`
-- **Arguments (manual):** `/path/to/NewActivity.applescript "Activity Name"`
+### StreamDeck Integration 🎮
 
-### Terminal Usage (Development)
+TimeDeck works perfectly with Stream Deck! Both the Python and Swift versions use the same AppleScript files.
+
+#### **Setup Instructions:**
+
+1. **Add System → Open** action in Stream Deck
+2. **Choose "Application"** and enter:
+   - **App:** `/usr/bin/osascript`
+   - **Arguments:** See examples below
+
+#### **Stream Deck Button Examples:**
+
+**📝 New Activity Button:**
+```
+App: /usr/bin/osascript
+Arguments: /Applications/TimeDeck.app/Contents/Scripts/NewActivity.applescript "Meeting with Team"
+```
+
+**⏹️ End Activity Button:**
+```
+App: /usr/bin/osascript  
+Arguments: /Applications/TimeDeck.app/Contents/Scripts/EndActivity.applescript
+```
+
+**📊 End Day Summary Button:**
+```
+App: /usr/bin/osascript
+Arguments: /Applications/TimeDeck.app/Contents/Scripts/EndDay.applescript
+```
+
+**📈 Generate Report Button:**
+```
+App: /usr/bin/osascript
+Arguments: /Applications/TimeDeck.app/Contents/Scripts/GenerateReport.applescript
+```
+
+**🗑️ Start Fresh Button:**
+```
+App: /usr/bin/osascript
+Arguments: /Applications/TimeDeck.app/Contents/Scripts/StartFresh.applescript
+```
+
+#### **Dynamic Activity Names:**
+For dynamic activities, create multiple buttons with different activity names:
+- "📞 Client Call" → `NewActivity.applescript "Client Call"`
+- "💻 Development" → `NewActivity.applescript "Development"`  
+- "📧 Email" → `NewActivity.applescript "Email"`
+- "☕ Break" → `NewActivity.applescript "Break"`
+
+#### **Compatibility:**
+- ✅ **Native TimeDeck DMG** (`TimeDeck-0.0.1.dmg`)
+- ✅ **All installations** use identical AppleScript paths
+- ✅ **Works with any TimeDeck version**
+
+### Terminal Usage (Development/Testing)
 ```bash
-# Log activities
+# Test AppleScript files directly
 osascript NewActivity.applescript "Meeting with team"
 osascript EndActivity.applescript
-
-# Generate reports
 osascript EndDay.applescript
 osascript GenerateReport.applescript
-
-# Manage data
 osascript StartFresh.applescript
+
+# Test from installed app location
+osascript /Applications/TimeDeck.app/Contents/Scripts/NewActivity.applescript "Development"
+osascript /Applications/TimeDeck.app/Contents/Scripts/EndActivity.applescript
 ```
 
 ## 📊 Data Format
@@ -147,9 +199,9 @@ Access version and author information:
 - Lists all available menu shortcuts
 
 ### Requirements
-- **macOS 10.14+** for app bundle
-- **Python 3.8+** for development
-- **rumps** for menu bar functionality (auto-installed)
+- **macOS 10.14+** for native app
+- **Swift** for development (Xcode command line tools)
+- **No external dependencies** - pure native Mac app
 
 ## 💡 Tips
 
@@ -162,14 +214,15 @@ Access version and author information:
 ## 📦 Distribution
 
 **For End Users:**
-- Share `TimeDeck-1.0.0.dmg`
+- Share `TimeDeck-0.0.1.dmg`
 - Users drag to Applications and launch
-- Professional Mac installer experience
+- Native Mac app experience, no dependencies
 
 **For Developers:**
 - Fork/clone repository
-- Run `./create_timedeck_dmg.sh` to build
+- Run `./create_dmg.sh` to build
 - Customize icons in `assets/` folder
+- Pure Swift - no external dependencies
 
 ---
 
