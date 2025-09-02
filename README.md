@@ -81,26 +81,13 @@ python3 timedeck_menubar.py
 5. Use "End Activity" for breaks or "New Activity" to switch tasks
 6. Generate daily summaries with "End Day Summary"
 
-### Keyboard Shortcuts
-**Menu Shortcuts** (when TimeDeck menu is open):
-- `Cmd+N` - New Activity
-- `Cmd+E` - End Activity  
-- `Cmd+D` - End Day Summary
-- `Cmd+R` - Generate Report
-
-**Global Shortcuts** (configurable, work from anywhere):
-- Default: `Cmd+Shift+N` - New Activity
-- Default: `Cmd+Shift+E` - End Activity
-- Default: `Cmd+Shift+D` - End Day Summary
-
-**Customization:**
-- Click "Preferences" in the menu to configure shortcuts individually
-- **Keyboard capture mode:** Press actual keys to set shortcuts
-- **Manual input mode:** Type shortcuts like `cmd+alt+n`
-- Individual dialogs for each shortcut with clear descriptions
-- Real-time key capture with confirmation
-- Examples: `cmd+alt+n`, `ctrl+shift+e`, `cmd+option+d`
-- Supports cmd, ctrl, alt/option, shift modifiers with any letter or number
+### Menu Functions
+**Click menu items to access:**
+- New Activity - Start tracking a new activity
+- End Activity - Stop current activity
+- End Day Summary - Generate daily summary
+- Generate Report - Create detailed report
+- About - Version and author information
 
 ### StreamDeck Integration (Optional)
 Configure StreamDeck buttons to run AppleScript files:
@@ -152,24 +139,12 @@ Format: `[UNIX_TIMESTAMP] [ACTIVITY_NAME_OR_END]`
 - App icon: High-resolution PNG for app bundle and Dock
 - Menu bar icon: Optimized for 22px menu bar display
 
-### Keyboard Shortcut Configuration
+### About Dialog
 
-**Two Configuration Modes:**
-
-1. **Keyboard Capture (Recommended):**
-   - Click "Capture Keys" when configuring
-   - Press your desired key combination
-   - Keys are automatically detected and formatted
-   - Escape to cancel capture
-
-2. **Manual Input:**
-   - Click "Type Manually" when configuring
-   - Enter shortcuts in format: `cmd+shift+n`
-   - Examples: `cmd+alt+e`, `ctrl+shift+d`
-
-**Valid modifiers:** cmd, ctrl, alt, option, shift  
-**Valid keys:** a-z, 0-9, space, tab, enter  
-**Validation:** Real-time validation with helpful error messages
+Access version and author information:
+- Click "About" in the TimeDeck menu
+- Shows version 0.0.1 and author: Jeremy Roberts
+- Lists all available menu shortcuts
 
 ### Requirements
 - **macOS 10.14+** for app bundle
