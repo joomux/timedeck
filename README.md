@@ -1,136 +1,106 @@
 # TimeDeck - Activity Tracking for Mac
 
-A beautiful and intuitive activity tracking system with a native Mac menu bar app for granular time tracking throughout your day.
+A beautiful and intuitive activity tracking system with a native Mac menu bar app featuring custom icons for granular time tracking throughout your day.
 
-## Files
+## 🚀 Quick Start
 
-- `NewActivity.applescript` - Logs a new activity with timestamp
-- `EndActivity.applescript` - Ends the current activity without starting a new one
-- `EndDay.applescript` - Calculates and displays time spent on each activity for the current day
-- `GenerateReport.applescript` - Creates detailed multi-day reports with activity sessions
-- `StartFresh.applescript` - Clears all activity data to start fresh
-- `timedeck_log.txt` - Data file (created automatically on Desktop)
-- `timedeck_report.txt` - Generated report file (created on Desktop)
-- `timedeck_menubar.py` - Python-based menu bar app (main app)
-- `create_timedeck_dmg.sh` - Create professional DMG installer
-- `launch_menubar.sh` - Launch script for menu bar app
-- `assets/` - Professional app icons
-- `icons/` - Generated icon files for different uses
-- `requirements.txt` - Python dependencies
+### Professional DMG Installer (Recommended)
+1. Download `TimeDeck-1.0.0.dmg`
+2. Open the DMG and drag `TimeDeck.app` to Applications
+3. Launch TimeDeck from Applications or Spotlight
+4. Your custom menu bar icon appears automatically
+5. Dependencies install automatically on first run
 
-## Setup
-
-### Menu Bar App (Recommended)
-
-TimeDeck features a beautiful native Mac menu bar app with your custom icons:
-
-#### Quick Install (DMG)
-1. Download and open `TimeDeck-1.0.0.dmg`
-2. Drag `TimeDeck.app` to Applications
-3. Launch TimeDeck - dependencies install automatically
-4. Beautiful custom icon appears in your menu bar
-
-#### Manual Install
-1. Run: `./launch_menubar.sh`
-2. Or directly: `python3 timedeck_menubar.py`
-3. Shows current activity with real-time duration tracking
-4. Professional custom icons and interface
-
-### For StreamDeck
-
-1. **New Activity Action:**
-   - Add a "System > Open" action to your StreamDeck
-   - Set the app to: `/usr/bin/osascript`
-   - Set arguments to: `/Users/jeremyroberts/Projects/hacktivity/NewActivity.applescript "Activity Name"`
-   - Or for prompted input: `/Users/jeremyroberts/Projects/hacktivity/NewActivity.applescript`
-
-2. **End Activity Action:**
-   - Add a "System > Open" action to your StreamDeck
-   - Set the app to: `/usr/bin/osascript`
-   - Set arguments to: `/Users/jeremyroberts/Projects/hacktivity/EndActivity.applescript`
-
-3. **End Day Action:**
-   - Add a "System > Open" action to your StreamDeck
-   - Set the app to: `/usr/bin/osascript`
-   - Set arguments to: `/Users/jeremyroberts/Projects/hacktivity/EndDay.applescript`
-
-4. **Generate Report Action:**
-   - Add a "System > Open" action to your StreamDeck
-   - Set the app to: `/usr/bin/osascript`
-   - Set arguments to: `/Users/jeremyroberts/Projects/hacktivity/GenerateReport.applescript`
-
-5. **Start Fresh Action:**
-   - Add a "System > Open" action to your StreamDeck
-   - Set the app to: `/usr/bin/osascript`
-   - Set arguments to: `/Users/jeremyroberts/Projects/hacktivity/StartFresh.applescript`
-
-### Manual Usage
-
-You can also run the scripts directly from Terminal:
-
+### Manual Development Setup
 ```bash
-# Log a new activity with name
+# Clone and run
+python3 timedeck_menubar.py
+
+# Or use the launch script
+./launch_menubar.sh
+```
+
+## 📁 Project Structure
+
+**Core Application:**
+- `timedeck_menubar.py` - Main menu bar app with custom icons
+- `launch_menubar.sh` - Launch script for development
+- `requirements.txt` - Python dependencies (rumps)
+
+**AppleScript Functions:**
+- `NewActivity.applescript` - Log a new activity with timestamp
+- `EndActivity.applescript` - End current activity without starting new one
+- `EndDay.applescript` - Calculate and display daily time summary
+- `GenerateReport.applescript` - Create detailed multi-day reports
+- `StartFresh.applescript` - Clear all activity data
+
+**Icons & Assets:**
+- `assets/` - Source icons (App Icon.png, Menubar Icon.png, TimeDeck.psd)
+- `icons/` - Generated icons (TimeDeck.icns, menu bar icons, etc.)
+- `convert_icons.sh` - Convert source icons to all required formats
+
+**Distribution:**
+- `create_timedeck_dmg.sh` - Build professional DMG installer
+- `TimeDeck-1.0.0.dmg` - Ready-to-distribute Mac app
+
+**Generated Files:**
+- `~/Desktop/timedeck_log.txt` - Activity data (created automatically)
+- `~/Desktop/timedeck_report.txt` - Generated reports
+
+## ✨ Features
+
+### Menu Bar App
+- **Custom icons** - Professional design using your provided assets
+- **Live activity tracking** - See current activity and duration in real-time
+- **Native Mac experience** - Proper app bundle with metadata
+- **Auto-start capability** - Add to Login Items for automatic startup
+- **Intuitive interface** - Click menu bar icon to access all functions
+
+### Activity Tracking
+- **Granular logging** - Track activities as you switch between tasks
+- **Smart time calculation** - Automatic duration tracking between activities
+- **Explicit activity ending** - End activities for breaks without starting new ones
+- **Daily summaries** - Comprehensive end-of-day time breakdowns
+- **Multi-day reports** - Detailed analysis across multiple days
+- **Data persistence** - Simple text format for easy backup and analysis
+
+### Additional Integrations
+- **StreamDeck support** - Use AppleScript files with StreamDeck buttons
+- **Terminal access** - Run scripts directly from command line
+- **Cross-platform scripts** - AppleScript files work independently
+
+## 🎯 How to Use
+
+### Menu Bar App (Primary Method)
+1. Launch TimeDeck from Applications
+2. Click the TimeDeck icon in your menu bar
+3. Select "New Activity" and enter activity name
+4. Work on your activity (duration tracked automatically)
+5. Use "End Activity" for breaks or "New Activity" to switch tasks
+6. Generate daily summaries with "End Day Summary"
+
+### StreamDeck Integration (Optional)
+Configure StreamDeck buttons to run AppleScript files:
+- **App:** `/usr/bin/osascript`
+- **Arguments:** `/path/to/NewActivity.applescript "Activity Name"`
+
+### Terminal Usage (Development)
+```bash
+# Log activities
 osascript NewActivity.applescript "Meeting with team"
-
-# Log a new activity with prompt
-osascript NewActivity.applescript
-
-# End current activity without starting a new one
 osascript EndActivity.applescript
 
-# Generate end of day summary
+# Generate reports
 osascript EndDay.applescript
-
-# Generate detailed multi-day report
 osascript GenerateReport.applescript
 
-# Clear all activity data to start fresh
+# Manage data
 osascript StartFresh.applescript
 ```
 
-## How It Works
+## 📊 Data Format
 
-### New Activity
-- Accepts an optional activity name as an argument
-- If no argument provided, prompts user for input
-- Logs entry to `~/Desktop/hacktivity_log.txt` in format: `timestamp activity_name`
-- Shows notification confirming the activity was logged
-
-### End Activity
-- Ends the current activity without starting a new one
-- Logs an "END" marker with timestamp
-- Useful for breaks, lunch, or end of work sessions
-- Shows notification confirming the activity was ended
-
-### End Day
-- Automatically ends any currently open activity with an END marker
-- Reads all entries from the log file
-- Filters entries for the current day
-- Calculates time spent on each activity by measuring intervals between activity switches and END markers
-- Handles explicit activity endings for accurate time tracking
-- Displays a summary dialog with:
-  - Time spent on each activity (hours, minutes, seconds)
-  - Total tracked time for the day
-
-### Generate Report
-- Analyzes ALL activity data in the log file (not just today)
-- Groups activities by date and calculates individual activity sessions
-- Creates a detailed text report showing:
-  - Date and day of week for each day
-  - Start time, duration, and activity name for each session
-  - Daily totals and overall summary statistics
-- Saves report to `~/Desktop/hacktivity_report.txt`
-- Perfect for weekly reviews and time analysis
-
-### Start Fresh
-- Prompts user for confirmation before clearing data
-- Clears all activity data from the log file
-- Useful for starting new tracking periods or clearing old data
-- Shows confirmation notifications
-
-## Data Format
-
-The log file (`hacktivity_log.txt`) stores entries in this format:
+Activity data is stored in `~/Desktop/timedeck_log.txt`:
 ```
 1703123456 Meeting with team
 1703125678 Code review
@@ -139,37 +109,50 @@ The log file (`hacktivity_log.txt`) stores entries in this format:
 1703129000 END
 ```
 
-Where the first number is a UNIX timestamp and the rest is either the activity name or "END" to mark the end of the current activity.
+Format: `[UNIX_TIMESTAMP] [ACTIVITY_NAME_OR_END]`
 
-## Features
+## 🔧 Development
 
-- **Granular tracking**: Log activities throughout the day as you switch between tasks
-- **Explicit activity ending**: End activities without starting new ones (perfect for breaks)
-- **Automatic calculations**: End Day script automatically calculates time spent on each activity
-- **Detailed reporting**: Generate comprehensive multi-day reports with session-by-session breakdowns
-- **StreamDeck integration**: Designed to work seamlessly with StreamDeck buttons
-- **Simple data format**: Plain text file for easy backup and analysis
-- **Handles repeated activities**: If you return to an activity later in the day, time is accumulated
-- **Start fresh capability**: Clear all data to begin new tracking periods
-- **User-friendly**: Shows notifications and clear dialog boxes with confirmation prompts
+### Building DMG
+```bash
+# Convert new icons (if assets/ changed)
+./convert_icons.sh
 
-## Tips
+# Build professional DMG installer
+./create_timedeck_dmg.sh
+```
 
-- Use descriptive activity names for better tracking
-- Log activities as you switch between them for accurate time tracking
-- Use "End Activity" when taking breaks or ending work sessions for accurate time tracking
-- Run "Generate Report" weekly or every few days for detailed time analysis
-- The last activity of the day is assumed to continue until you run "End Day" (unless explicitly ended)
-- Log file is stored on Desktop for easy access and backup
-- Generated reports are also saved on Desktop for easy review and archiving
+### Icon Management
+- Place source icons in `assets/` folder
+- Run `./convert_icons.sh` to generate all required formats
+- App icon: High-resolution PNG for app bundle and Dock
+- Menu bar icon: Optimized for 22px menu bar display
 
-## Distribution
+### Requirements
+- **macOS 10.14+** for app bundle
+- **Python 3.8+** for development
+- **rumps** for menu bar functionality (auto-installed)
 
-Want to share Hacktivity with others? See `DISTRIBUTION.md` for complete packaging options:
+## 💡 Tips
 
-- **DMG installer** (most Mac-native, recommended)
-- **Simple installer script** (command-line friendly)
-- **Standalone executable** (no Python required)
-- **Pip package** (for Python developers)
+- **Activity names:** Use descriptive names for better tracking
+- **Break tracking:** Use "End Activity" for accurate break time
+- **Regular reports:** Generate weekly reports for time analysis
+- **Backup data:** Log file is plain text for easy backup
+- **Login startup:** Add TimeDeck.app to Login Items for auto-start
 
-Quick start: Run `./create_timedeck_dmg.sh` to create a professional Mac installer.
+## 📦 Distribution
+
+**For End Users:**
+- Share `TimeDeck-1.0.0.dmg`
+- Users drag to Applications and launch
+- Professional Mac installer experience
+
+**For Developers:**
+- Fork/clone repository
+- Run `./create_timedeck_dmg.sh` to build
+- Customize icons in `assets/` folder
+
+---
+
+**TimeDeck** - Beautiful, professional time tracking for Mac 🎯
