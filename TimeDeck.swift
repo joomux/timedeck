@@ -40,6 +40,7 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "New Activity", action: #selector(newActivity), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "End Activity", action: #selector(endActivity), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "Activity Status", action: #selector(activityStatus), keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "End Day Summary", action: #selector(endDay), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Generate Report", action: #selector(generateReport), keyEquivalent: ""))
@@ -118,6 +119,10 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         updateCurrentActivity()
     }
     
+    @objc func activityStatus() {
+        runAppleScript("ActivityStatus")
+    }
+    
     @objc func endDay() {
         runAppleScript("EndDay")
         updateCurrentActivity()
@@ -174,7 +179,7 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     @objc func showAbout() {
         let aboutText = """
         TimeDeck
-        Version: 0.0.1
+        Version: 0.0.2
         Author: Jeremy Roberts
         
         A simple menu bar app for tracking activities and time.

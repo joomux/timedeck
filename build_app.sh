@@ -40,9 +40,9 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
     <key>CFBundleDisplayName</key>
     <string>TimeDeck</string>
     <key>CFBundleVersion</key>
-    <string>0.0.1</string>
+    <string>0.0.2</string>
     <key>CFBundleShortVersionString</key>
-    <string>0.0.1</string>
+    <string>0.0.2</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>LSUIElement</key>
@@ -56,7 +56,7 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2024 Jeremy Roberts. All rights reserved.</string>
     <key>CFBundleGetInfoString</key>
-    <string>TimeDeck 0.0.1 - Native Activity Tracking for Mac</string>
+    <string>TimeDeck 0.0.2 - Native Activity Tracking for Mac</string>
     <key>CFBundleIconFile</key>
     <string>TimeDeck.icns</string>
 </dict>

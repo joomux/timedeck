@@ -19,8 +19,8 @@ on run argv
         return
     end if
     
-    -- Get current UNIX timestamp
-    set currentTimestamp to do shell script "date +%s"
+    -- Get current human-readable timestamp
+    set currentTimestamp to do shell script "date '+%Y-%m-%d %H:%M:%S'"
     
     -- Create log entry
     set logEntry to currentTimestamp & " " & activityName

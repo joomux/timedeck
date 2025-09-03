@@ -16,17 +16,42 @@ set reportFilePath to homeDir & "/Desktop/timedeck_report.txt"
         set logLines to paragraphs of logContents
         
         repeat with logLine in logLines
-            if logLine is not "" then
-                set spaceIndex to offset of " " in logLine
-                if spaceIndex > 0 then
-                    set entryTimestamp to text 1 thru (spaceIndex - 1) of logLine
-                    set activityName to text (spaceIndex + 1) thru -1 of logLine
+            set logLineStr to logLine as string
+            if logLineStr is not "" then
+                -- Handle both old (UNIX timestamp) and new (human-readable) formats
+                if (count of characters of logLineStr) > 19 and (text 5 thru 5 of logLineStr) is "-" then
+                    -- New format: "YYYY-MM-DD HH:MM:SS activity name"
+                    set entryTimestamp to text 1 thru 19 of logLineStr
+                    set activityName to text 21 thru -1 of logLineStr
                     
-                    -- Convert timestamp to date for grouping
-                    set dateStr to do shell script "date -j -f '%s' " & entryTimestamp & " '+%Y-%m-%d'"
-                    set timeStr to do shell script "date -j -f '%s' " & entryTimestamp & " '+%H:%M:%S'"
+                    -- Extract date and time directly from human-readable format
+                    set dateStr to text 1 thru 10 of entryTimestamp
+                    set timeStr to text 12 thru 19 of entryTimestamp
                     
-                    set end of allEntries to {timestamp:(entryTimestamp as integer), activity:activityName, dateStr:dateStr, timeStr:timeStr}
+                    -- Convert to UNIX timestamp for calculations
+                    try
+                        set entryUnixTime to do shell script "date -jf '%Y-%m-%d %H:%M:%S' '" & entryTimestamp & "' +%s"
+                        set end of allEntries to {timestamp:(entryUnixTime as integer), activity:activityName, dateStr:dateStr, timeStr:timeStr}
+                    on error
+                        -- Skip malformed entries
+                    end try
+                else
+                    -- Old format: "UNIX_TIMESTAMP activity name"
+                    set spaceIndex to offset of " " in logLineStr
+                    if spaceIndex > 0 then
+                        set entryTimestamp to text 1 thru (spaceIndex - 1) of logLineStr
+                        set activityName to text (spaceIndex + 1) thru -1 of logLineStr
+                        
+                        -- Convert timestamp to date for grouping
+                        try
+                            set dateStr to do shell script "date -r " & entryTimestamp & " '+%Y-%m-%d'"
+                            set timeStr to do shell script "date -r " & entryTimestamp & " '+%H:%M:%S'"
+                            
+                            set end of allEntries to {timestamp:(entryTimestamp as integer), activity:activityName, dateStr:dateStr, timeStr:timeStr}
+                        on error
+                            -- Skip malformed entries
+                        end try
+                    end if
                 end if
             end if
         end repeat

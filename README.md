@@ -5,7 +5,7 @@ A beautiful and intuitive activity tracking system with a native Mac menu bar ap
 ## 🚀 Quick Start
 
 ### Professional DMG Installer (Recommended)
-1. Download `TimeDeck-0.0.1.dmg`
+1. Download `TimeDeck-0.0.2.dmg`
 2. Open the DMG and drag `TimeDeck.app` to Applications
 3. Launch TimeDeck from Applications or Spotlight
 4. Your custom menu bar icon appears automatically
@@ -143,7 +143,7 @@ For dynamic activities, create multiple buttons with different activity names:
 - "☕ Break" → `NewActivity.applescript "Break"`
 
 #### **Compatibility:**
-- ✅ **Native TimeDeck DMG** (`TimeDeck-0.0.1.dmg`)
+- ✅ **Native TimeDeck DMG** (`TimeDeck-0.0.2.dmg`)
 - ✅ **All installations** use identical AppleScript paths
 - ✅ **Works with any TimeDeck version**
 
@@ -195,7 +195,7 @@ Format: `[UNIX_TIMESTAMP] [ACTIVITY_NAME_OR_END]`
 
 Access version and author information:
 - Click "About" in the TimeDeck menu
-- Shows version 0.0.1 and author: Jeremy Roberts
+- Shows version 0.0.2 and author: Jeremy Roberts
 - Lists all available menu shortcuts
 
 ### Requirements
@@ -214,7 +214,7 @@ Access version and author information:
 ## 📦 Distribution
 
 **For End Users:**
-- Share `TimeDeck-0.0.1.dmg`
+- Share `TimeDeck-0.0.2.dmg`
 - Users drag to Applications and launch
 - Native Mac app experience, no dependencies
 

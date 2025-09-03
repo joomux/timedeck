@@ -7,7 +7,7 @@ echo "📀 Creating TimeDeck DMG installer..."
 
 # Configuration
 APP_NAME="TimeDeck"
-VERSION="0.0.1"
+VERSION="0.0.2"
 DMG_NAME="TimeDeck-${VERSION}"
 TEMP_DIR="dmg_temp"
 DMG_DIR="dmg_build"

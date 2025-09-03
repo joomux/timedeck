@@ -15,44 +15,75 @@ on run
         if (count of logLines) > 0 then
             set lastLine to item -1 of logLines
             if lastLine is not "" then
-                set spaceIndex to offset of " " in lastLine
-                if spaceIndex > 0 then
-                    set lastActivity to text (spaceIndex + 1) thru -1 of lastLine
-                    -- If the last entry is not "END", we have an open activity
-                    if lastActivity is not "END" then
-                        -- Get current timestamp and add END marker
-                        set currentTimestamp to do shell script "date +%s"
-                        set endEntry to currentTimestamp & " END"
-                        do shell script "printf '%s\\n' " & quoted form of endEntry & " >> " & quoted form of logFilePath
-                        
-                        -- Re-read the log file to include the END marker
-                        set logContents to do shell script "cat " & quoted form of logFilePath
-                        
-                        -- Show notification that we ended the open activity
-                        display notification "Open activity automatically ended for day summary" with title "TimeDeck - End Day"
+                -- Handle both old and new timestamp formats
+                if (count of characters of lastLine) > 19 and (text 5 thru 5 of lastLine) is "-" then
+                    -- New format: "YYYY-MM-DD HH:MM:SS activity name"
+                    set lastActivity to text 21 thru -1 of lastLine
+                else
+                    -- Old format: "UNIX_TIMESTAMP activity name"
+                    set spaceIndex to offset of " " in lastLine
+                    if spaceIndex > 0 then
+                        set lastActivity to text (spaceIndex + 1) thru -1 of lastLine
+                    else
+                        set lastActivity to ""
                     end if
+                end if
+                
+                -- If the last entry is not "END", we have an open activity
+                if lastActivity is not "END" then
+                    -- Get current timestamp and add END marker
+                    set currentTimestamp to do shell script "date '+%Y-%m-%d %H:%M:%S'"
+                    set endEntry to currentTimestamp & " END"
+                    do shell script "printf '%s\\n' " & quoted form of endEntry & " >> " & quoted form of logFilePath
+                    
+                    -- Re-read the log file to include the END marker
+                    set logContents to do shell script "cat " & quoted form of logFilePath
+                    
+                    -- Show notification that we ended the open activity
+                    display notification "Open activity automatically ended for day summary" with title "TimeDeck - End Day"
                 end if
             end if
         end if
         
         -- Get today's date in UNIX timestamp range
-        set todayStart to do shell script "date -j -f '%Y-%m-%d %H:%M:%S' \"$(date '+%Y-%m-%d') 00:00:00\" '+%s'"
-        set todayEnd to do shell script "date -j -f '%Y-%m-%d %H:%M:%S' \"$(date '+%Y-%m-%d') 23:59:59\" '+%s'"
+        set todayStart to do shell script "date -j -v0H -v0M -v0S '+%s'"
+        set todayEnd to do shell script "date -j -v23H -v59M -v59S '+%s'"
         
         -- Parse log entries for today
         set todayEntries to {}
         set logLines to paragraphs of logContents
         
         repeat with logLine in logLines
-            if logLine is not "" then
-                set spaceIndex to offset of " " in logLine
-                if spaceIndex > 0 then
-                    set entryTimestamp to text 1 thru (spaceIndex - 1) of logLine
-                    set activityName to text (spaceIndex + 1) thru -1 of logLine
+            set logLineStr to logLine as string
+            if logLineStr is not "" then
+                -- Handle both old (UNIX timestamp) and new (human-readable) formats
+                if (count of characters of logLineStr) > 19 and (text 5 thru 5 of logLineStr) is "-" then
+                    -- New format: "YYYY-MM-DD HH:MM:SS activity name"
+                    set entryTimestamp to text 1 thru 19 of logLineStr
+                    set activityName to text 21 thru -1 of logLineStr
                     
-                    -- Check if entry is from today
-                    if entryTimestamp ≥ todayStart and entryTimestamp ≤ todayEnd then
-                        set end of todayEntries to {timestamp:entryTimestamp as integer, activity:activityName}
+                    -- Convert human-readable timestamp to UNIX timestamp for comparison
+                    try
+                        set entryUnixTime to do shell script "date -jf '%Y-%m-%d %H:%M:%S' '" & entryTimestamp & "' +%s"
+                        
+                        -- Check if entry is from today
+                        if (entryUnixTime as integer) ≥ (todayStart as integer) and (entryUnixTime as integer) ≤ (todayEnd as integer) then
+                            set end of todayEntries to {timestamp:entryUnixTime as integer, activity:activityName}
+                        end if
+                    on error
+                        -- Skip malformed entries
+                    end try
+                else
+                    -- Old format: "UNIX_TIMESTAMP activity name"
+                    set spaceIndex to offset of " " in logLineStr
+                    if spaceIndex > 0 then
+                        set entryTimestamp to text 1 thru (spaceIndex - 1) of logLineStr
+                        set activityName to text (spaceIndex + 1) thru -1 of logLineStr
+                        
+                        -- Check if entry is from today
+                        if (entryTimestamp as integer) ≥ (todayStart as integer) and (entryTimestamp as integer) ≤ (todayEnd as integer) then
+                            set end of todayEntries to {timestamp:entryTimestamp as integer, activity:activityName}
+                        end if
                     end if
                 end if
             end if

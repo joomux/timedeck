@@ -74,7 +74,7 @@ Arguments: /Applications/TimeDeck.app/Contents/Scripts/StartFresh.applescript
 - **Multi-Actions:** Combine `EndActivity` + `NewActivity` for quick switching
 
 ## ✅ **Works With TimeDeck**
-- Native Mac app: `TimeDeck-0.0.1.dmg`  
+- Native Mac app: `TimeDeck-0.0.2.dmg`  
 - Pure Swift implementation
 - No external dependencies required!
 
