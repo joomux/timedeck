@@ -76,16 +76,36 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
                 let lines = content.components(separatedBy: .newlines).filter { !$0.isEmpty }
                 
                 if let lastLine = lines.last, !lastLine.hasSuffix("END") {
-                    let components = lastLine.components(separatedBy: " ")
-                    if components.count >= 2,
-                       let timestamp = TimeInterval(components[0]) {
-                        let activityName = components.dropFirst().joined(separator: " ")
-                        let duration = Int(Date().timeIntervalSince1970 - timestamp)
-                        let hours = duration / 3600
-                        let minutes = (duration % 3600) / 60
+                    // Handle human-readable timestamp format: "YYYY-MM-DD HH:MM:SS activity name"
+                    if lastLine.count > 19 && lastLine.prefix(4).allSatisfy(\.isNumber) {
+                        let timestampStr = String(lastLine.prefix(19)) // "YYYY-MM-DD HH:MM:SS"
+                        let activityName = String(lastLine.dropFirst(20)) // Skip timestamp and space
                         
-                        currentActivityItem.title = "🟢 \(activityName) (\(hours)h \(minutes)m)"
-                        return
+                        // Parse the timestamp to calculate duration
+                        let formatter = DateFormatter()
+                        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                        
+                        if let startDate = formatter.date(from: timestampStr) {
+                            let duration = Int(Date().timeIntervalSince(startDate))
+                            let hours = duration / 3600
+                            let minutes = (duration % 3600) / 60
+                            
+                            currentActivityItem.title = "🟢 \(activityName) (\(hours)h \(minutes)m)"
+                            return
+                        }
+                    } else {
+                        // Fallback: try old UNIX timestamp format for backwards compatibility
+                        let components = lastLine.components(separatedBy: " ")
+                        if components.count >= 2,
+                           let timestamp = TimeInterval(components[0]) {
+                            let activityName = components.dropFirst().joined(separator: " ")
+                            let duration = Int(Date().timeIntervalSince1970 - timestamp)
+                            let hours = duration / 3600
+                            let minutes = (duration % 3600) / 60
+                            
+                            currentActivityItem.title = "🟢 \(activityName) (\(hours)h \(minutes)m)"
+                            return
+                        }
                     }
                 }
             }
