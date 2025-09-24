@@ -1,0 +1,23 @@
+{
+  "name": "timedeck-streamdeck-plugin",
+  "version": "1.0.0",
+  "description": "TimeDeck integration plugin for Elgato StreamDeck",
+  "main": "bin/plugin.js",
+  "scripts": {
+    "build": "echo 'No build process required'",
+    "test": "echo 'No tests specified'"
+  },
+  "keywords": [
+    "streamdeck",
+    "timedeck",
+    "productivity",
+    "time-tracking"
+  ],
+  "author": "TimeDeck",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}

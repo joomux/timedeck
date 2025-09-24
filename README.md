@@ -1,6 +1,6 @@
-# TimeDeck - Activity Tracking for Mac
+# ✨ TimeDeck Enhanced - Next-Level Activity Tracking for Mac
 
-A beautiful and intuitive activity tracking system with a native Mac menu bar app featuring custom icons for granular time tracking throughout your day.
+A revolutionary activity tracking system with an enhanced native Mac menu bar app featuring smart templates, intelligent break detection, pomodoro timers, real-time analytics, and much more!
 
 ## 🚀 Quick Start
 
@@ -50,47 +50,131 @@ swiftc -o TimeDeck TimeDeck.swift && ./TimeDeck
 - `~/Desktop/timedeck_log.txt` - Activity data (created automatically)
 - `~/Desktop/timedeck_report.txt` - Generated reports
 
-## ✨ Features
+## ✨ Enhanced Features
 
-### Menu Bar App
-- **Custom icons** - Professional design using your provided assets
-- **Live activity tracking** - See current activity and duration in real-time
-- **Configurable shortcuts** - Customize global hotkeys to your preference
-- **Preferences system** - User-friendly configuration interface
-- **Native Mac experience** - Proper app bundle with metadata
-- **Auto-start capability** - Add to Login Items for automatic startup
-- **Intuitive interface** - Click menu bar icon to access all functions
+### 🚀 Smart Activity Management
+- **Smart Activity Templates** - Pre-configured templates with emojis and colors
+- **Quick Action Buttons** - One-click activity switching from menu bar
+- **Recent Activity Suggestions** - Intelligent auto-complete based on history
+- **Enhanced Activity Dialog** - Beautiful floating window with template selection
+- **Activity Categories** - Organize work vs personal activities
 
-### Activity Tracking
-- **Granular logging** - Track activities as you switch between tasks
-- **Smart time calculation** - Automatic duration tracking between activities
-- **Explicit activity ending** - End activities for breaks without starting new ones
-- **Daily summaries** - Comprehensive end-of-day time breakdowns
-- **Multi-day reports** - Detailed analysis across multiple days
-- **Data persistence** - Simple text format for easy backup and analysis
+### 🧠 Intelligent Automation
+- **Break Detection** - Automatic idle time detection with smart handling
+- **Pomodoro Timer Integration** - Built-in work/break cycles with notifications
+- **Global Keyboard Shortcuts** - System-wide hotkeys (⌘⌥T, ⌘⌥P, ⌘⌥E)
+- **Smart Notifications** - Modern notification system with rich content
+- **Pause/Resume Functionality** - Intelligent activity state management
 
-### Additional Integrations
+### 📊 Advanced Analytics & Insights
+- **Real-time Dashboard** - Live analytics with today's and weekly summaries
+- **Enhanced Menu Bar Display** - Rich status with activity duration and progress
+- **Visual Activity Status** - Color-coded activities and progress indicators
+- **Goal Setting & Tracking** - Set daily/weekly targets with progress monitoring
+- **Advanced Export Options** - CSV, JSON, and plain text export formats
+
+### 🎨 Beautiful User Experience
+- **Enhanced UI Design** - Modern, floating windows with professional layouts
+- **Template-based Interface** - Quick selection with visual activity templates
+- **Preferences Panel** - Comprehensive settings for all features
+- **Template Management** - Add, edit, and organize your activity templates
+- **Dark Mode Support** - Automatic adaptation to system appearance
+
+### 🔧 Technical Enhancements
+- **Modern Notification System** - UserNotifications framework (macOS 11+)
+- **Backward Compatibility** - Supports macOS 10.14+ with graceful fallbacks
+- **Enhanced Data Structures** - Robust activity tracking with better parsing
+- **Performance Optimizations** - 15-second update cycles for responsive UI
+- **Memory Management** - Proper timer cleanup and resource management
+
+### 📱 System Integration
+- **Global Event Monitoring** - System-wide keyboard shortcut capture
+- **Idle State Detection** - CGEventSource integration for accurate idle detection
+- **Application Lifecycle** - Proper startup, shutdown, and state management
+- **Preferences Persistence** - UserDefaults integration for settings storage
+
+### 📈 Data & Reporting
+- **Multiple Export Formats** - Professional CSV and JSON export capabilities
+- **Historical Analysis** - Week-over-week and day-over-day comparisons
+- **Activity Categorization** - Work vs personal time breakdown
+- **Duration Calculations** - Precise time tracking with multiple format options
+
+### Legacy Features (Enhanced)
 - **StreamDeck support** - Use AppleScript files with StreamDeck buttons
 - **Terminal access** - Run scripts directly from command line
 - **Cross-platform scripts** - AppleScript files work independently
+- **Data persistence** - Enhanced text format with backward compatibility
 
-## 🎯 How to Use
+## 🎯 Enhanced Features Guide
 
-### Menu Bar App (Primary Method)
-1. Launch TimeDeck from Applications
-2. Click the TimeDeck icon in your menu bar
-3. Select "New Activity" and enter activity name
-4. Work on your activity (duration tracked automatically)
-5. Use "End Activity" for breaks or "New Activity" to switch tasks
-6. Generate daily summaries with "End Day Summary"
+### 🚀 Quick Start with Enhanced TimeDeck
+1. **Launch TimeDeck Enhanced** from Applications
+2. **Grant notification permissions** when prompted for smart alerts
+3. **Click the menu bar icon** to see the enhanced menu with quick actions
+4. **Try a Quick Action** - Click any emoji button for instant activity start
+5. **Use keyboard shortcuts** - ⌘⌥T for new activity, ⌘⌥P to pause/resume
 
-### Menu Functions
-**Click menu items to access:**
-- New Activity - Start tracking a new activity
-- End Activity - Stop current activity
-- End Day Summary - Generate daily summary
-- Generate Report - Create detailed report
-- About - Version and author information
+### ✨ New Activity Dialog (Enhanced)
+1. **Click "✨ New Activity..."** in the menu or press ⌘⌥T
+2. **Choose from Templates** - Click any template button for instant selection
+3. **Or type custom name** - Auto-complete will suggest recent activities
+4. **Recent Activities** - Quick access to your most used activities
+5. **Press Enter or click Start** to begin tracking
+
+### 🚀 Quick Actions Menu
+- **One-click activity start** from template buttons in menu
+- **Emoji indicators** show activity types at a glance
+- **Organized by category** (Work vs Personal activities)
+- **Instant switching** - no dialogs needed for common activities
+
+### 🧠 Smart Break Detection
+1. **Enable in Preferences** (⌘⌥, or menu → Preferences)
+2. **Set idle threshold** (default: 5 minutes)
+3. **When idle detected** - choose to log as break, continue, or start new activity
+4. **Smart interruption** - won't interrupt during Pomodoro sessions
+
+### 🍅 Pomodoro Timer Integration
+1. **Enable Pomodoro** in Preferences
+2. **Start Pomodoro** from menu for focused work sessions
+3. **Automatic transitions** - work → break → work cycles
+4. **Smart notifications** alert you when to switch
+5. **Configurable durations** - customize work and break lengths
+
+### 📊 Real-time Dashboard
+1. **Click "Daily Dashboard"** or press ⌘⌥D
+2. **View today's activities** with precise time breakdowns
+3. **Weekly summaries** show productivity patterns
+4. **Visual insights** help optimize your time allocation
+
+### ⌨️ Global Keyboard Shortcuts
+- **⌘⌥T** - New Activity (works from any app)
+- **⌘⌥P** - Pause/Resume current activity
+- **⌘⌥E** - End current activity
+- **⌘⌥D** - Open Dashboard
+- **⌘⌥,** - Open Preferences
+
+### 📈 Enhanced Export & Analytics
+1. **Export Data** from menu for external analysis
+2. **Choose format** - CSV for spreadsheets, JSON for developers
+3. **Historical tracking** across days, weeks, and months
+4. **Goal setting** to track productivity targets
+
+### 🎨 Customization Options
+1. **Manage Templates** - add, edit, or remove activity templates
+2. **Set Goals** - configure daily and weekly time targets
+3. **Preferences Panel** - fine-tune all enhanced features
+4. **Template colors** and emojis for visual organization
+
+### Legacy Menu Functions (Enhanced)
+**Enhanced menu organization:**
+- **🚀 Quick Actions** - Template-based instant activity start
+- **✨ New Activity...** - Enhanced dialog with suggestions
+- **⏹️ End Activity** - Smart activity termination
+- **⏸️ Pause/Resume** - Intelligent pause/resume toggle
+- **🍅 Pomodoro** - Timer controls (when enabled)
+- **📊 Analytics & Reports** - Dashboard, status, summaries, exports
+- **🔧 Tools** - Templates, goals, preferences, fresh start
+- **About TimeDeck Enhanced** - Feature overview and shortcuts
 
 ### StreamDeck Integration 🎮
 

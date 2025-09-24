@@ -1,0 +1,123 @@
+{
+  "SDKVersion": 2,
+  "Author": "TimeDeck",
+  "Version": "1.0.0",
+  "Name": "TimeDeck Activity Tracker",
+  "Description": "Control TimeDeck activity tracking directly from your StreamDeck",
+  "Category": "Productivity",
+  "CategoryIcon": "imgs/categoryIcon",
+  "Icon": "imgs/pluginIcon",
+  "URL": "https://github.com/timedeck",
+  "CodePath": "bin/plugin.js",
+  "PropertyInspectorPath": "ui/propertyInspector.html",
+  "DefaultWindowSize": [500, 650],
+  "Profiles": [
+    {
+      "Name": "TimeDeck",
+      "DeviceType": 0,
+      "ReadOnly": false,
+      "DontAutoSwitchWhenRequestedByPlugin": false
+    }
+  ],
+  "Actions": [
+    {
+      "Icon": "imgs/start-activity",
+      "Name": "Start Activity",
+      "States": [
+        {
+          "Image": "imgs/start-activity",
+          "TitleAlignment": "bottom",
+          "ShowTitle": true
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "Start a new TimeDeck activity",
+      "UUID": "com.timedeck.streamdeck.start-activity",
+      "PropertyInspectorPath": "ui/start-activity.html"
+    },
+    {
+      "Icon": "imgs/end-activity",
+      "Name": "End Activity",
+      "States": [
+        {
+          "Image": "imgs/end-activity",
+          "TitleAlignment": "bottom",
+          "ShowTitle": true
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "End the current TimeDeck activity",
+      "UUID": "com.timedeck.streamdeck.end-activity"
+    },
+    {
+      "Icon": "imgs/activity-status",
+      "Name": "Activity Status",
+      "States": [
+        {
+          "Image": "imgs/activity-status",
+          "TitleAlignment": "bottom",
+          "ShowTitle": true
+        }
+      ],
+      "SupportedInMultiActions": false,
+      "Tooltip": "Show current activity status with live timer",
+      "UUID": "com.timedeck.streamdeck.activity-status"
+    },
+    {
+      "Icon": "imgs/quick-template",
+      "Name": "Quick Template",
+      "States": [
+        {
+          "Image": "imgs/quick-template",
+          "TitleAlignment": "bottom",
+          "ShowTitle": true
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "Start activity from template",
+      "UUID": "com.timedeck.streamdeck.quick-template",
+      "PropertyInspectorPath": "ui/quick-template.html"
+    },
+    {
+      "Icon": "imgs/pause-resume",
+      "Name": "Pause/Resume",
+      "States": [
+        {
+          "Image": "imgs/pause-resume",
+          "TitleAlignment": "bottom",
+          "ShowTitle": true
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "Pause or resume current activity",
+      "UUID": "com.timedeck.streamdeck.pause-resume"
+    },
+    {
+      "Icon": "imgs/start-fresh",
+      "Name": "Start Fresh",
+      "States": [
+        {
+          "Image": "imgs/start-fresh",
+          "TitleAlignment": "bottom",
+          "ShowTitle": true
+        }
+      ],
+      "SupportedInMultiActions": false,
+      "Tooltip": "Clear all activity logs and start fresh",
+      "UUID": "com.timedeck.streamdeck.start-fresh"
+    }
+  ],
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "10.14"
+    },
+    {
+      "Platform": "windows", 
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "6.7"
+  }
+}

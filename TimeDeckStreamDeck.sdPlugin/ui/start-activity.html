@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Start Activity Configuration</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #2D2D30;
+            color: #CCCCCC;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 13px;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #FFFFFF;
+        }
+        
+        .section-description {
+            font-size: 12px;
+            color: #999999;
+            line-height: 1.4;
+        }
+        
+        input[type="text"] {
+            background-color: #3C3C3C;
+            border: 1px solid #555555;
+            border-radius: 4px;
+            color: #CCCCCC;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #007ACC;
+            background-color: #404040;
+        }
+        
+        .examples {
+            background-color: #1E1E1E;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        
+        .examples-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+        }
+        
+        .example-item {
+            margin: 4px 0;
+            color: #CCCCCC;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        
+        .example-item:hover {
+            background-color: #333333;
+        }
+        
+        .tip {
+            background-color: #264F78;
+            border-left: 4px solid #007ACC;
+            padding: 12px;
+            border-radius: 0 4px 4px 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section">
+            <div class="section-title">Activity Name</div>
+            <div class="section-description">
+                Enter the name of the activity you want to start when this button is pressed.
+            </div>
+            <input type="text" id="activityName" placeholder="e.g., Development, Meeting, Email" value="">
+        </div>
+        
+        <div class="examples">
+            <div class="examples-title">💡 Common Activities</div>
+            <div class="example-item" onclick="setActivity('Development')">💻 Development</div>
+            <div class="example-item" onclick="setActivity('Meeting')">🗣️ Meeting</div>
+            <div class="example-item" onclick="setActivity('Email')">📧 Email</div>
+            <div class="example-item" onclick="setActivity('Planning')">📝 Planning</div>
+            <div class="example-item" onclick="setActivity('Research')">🔍 Research</div>
+            <div class="example-item" onclick="setActivity('Break')">☕ Break</div>
+        </div>
+        
+        <div class="tip">
+            <strong>💡 Tip:</strong> Choose descriptive names that help you track your time effectively. 
+            The activity name will appear on the button and in your TimeDeck logs.
+        </div>
+    </div>
+
+    <script>
+        // Stream Deck WebSocket
+        let websocket = null;
+        let uuid = null;
+        let actionInfo = {};
+        let inInfo = {};
+
+        function connectElgatoStreamDeckSocket(inPort, inPropertyInspectorUUID, inRegisterEvent, inInfo, inActionInfo) {
+            uuid = inPropertyInspectorUUID;
+            actionInfo = JSON.parse(inActionInfo);
+            inInfo = JSON.parse(inInfo);
+            
+            websocket = new WebSocket('ws://localhost:' + inPort);
+            
+            websocket.onopen = function() {
+                const register = {
+                    event: inRegisterEvent,
+                    uuid: inPropertyInspectorUUID
+                };
+                websocket.send(JSON.stringify(register));
+                
+                // Request current settings
+                websocket.send(JSON.stringify({
+                    event: 'getSettings',
+                    context: uuid
+                }));
+            };
+            
+            websocket.onmessage = function(event) {
+                const jsonObj = JSON.parse(event.data);
+                
+                if (jsonObj.event === 'didReceiveSettings') {
+                    const settings = jsonObj.payload.settings;
+                    document.getElementById('activityName').value = settings.activityName || '';
+                }
+            };
+        }
+
+        // Set activity name from examples
+        function setActivity(name) {
+            document.getElementById('activityName').value = name;
+            saveSettings();
+        }
+
+        // Save settings when input changes
+        function saveSettings() {
+            const activityName = document.getElementById('activityName').value;
+            
+            const payload = {
+                activityName: activityName
+            };
+            
+            if (websocket) {
+                websocket.send(JSON.stringify({
+                    event: 'setSettings',
+                    context: uuid,
+                    payload: payload
+                }));
+            }
+        }
+
+        // Add event listener to input
+        document.addEventListener('DOMContentLoaded', function() {
+            const activityInput = document.getElementById('activityName');
+            activityInput.addEventListener('input', saveSettings);
+            activityInput.addEventListener('blur', saveSettings);
+        });
+
+        console.log('Start Activity Property Inspector Loaded');
+    </script>
+</body>
+</html>

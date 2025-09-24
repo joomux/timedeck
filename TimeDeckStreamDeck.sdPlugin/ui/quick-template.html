@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Quick Template Configuration</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #2D2D30;
+            color: #CCCCCC;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 13px;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #FFFFFF;
+        }
+        
+        .section-description {
+            font-size: 12px;
+            color: #999999;
+            line-height: 1.4;
+        }
+        
+        select {
+            background-color: #3C3C3C;
+            border: 1px solid #555555;
+            border-radius: 4px;
+            color: #CCCCCC;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #007ACC;
+            background-color: #404040;
+        }
+        
+        .template-preview {
+            background-color: #1E1E1E;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 10px;
+            min-height: 50px;
+        }
+        
+        .template-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .template-emoji {
+            font-size: 24px;
+        }
+        
+        .template-details {
+            flex: 1;
+        }
+        
+        .template-name {
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 4px;
+        }
+        
+        .template-category {
+            font-size: 11px;
+            color: #999999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .quick-action-badge {
+            background-color: #007ACC;
+            color: #FFFFFF;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #999999;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #FF6B6B;
+            background-color: #2D1B1B;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 4px solid #FF6B6B;
+        }
+        
+        .tip {
+            background-color: #264F78;
+            border-left: 4px solid #007ACC;
+            padding: 12px;
+            border-radius: 0 4px 4px 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section">
+            <div class="section-title">Select Template</div>
+            <div class="section-description">
+                Choose an activity template from your TimeDeck configuration.
+            </div>
+            <select id="templateSelect">
+                <option value="" disabled selected>Loading templates...</option>
+            </select>
+        </div>
+        
+        <div class="template-preview" id="templatePreview">
+            <div class="loading">Select a template to see preview</div>
+        </div>
+        
+        <div class="tip">
+            <strong>💡 Tip:</strong> Templates are synced from your TimeDeck app. 
+            Add or modify templates in TimeDeck to see them here.
+        </div>
+    </div>
+
+    <script>
+        // Stream Deck WebSocket
+        let websocket = null;
+        let uuid = null;
+        let actionInfo = {};
+        let inInfo = {};
+        let templates = [];
+
+        function connectElgatoStreamDeckSocket(inPort, inPropertyInspectorUUID, inRegisterEvent, inInfo, inActionInfo) {
+            uuid = inPropertyInspectorUUID;
+            actionInfo = JSON.parse(inActionInfo);
+            inInfo = JSON.parse(inInfo);
+            
+            websocket = new WebSocket('ws://localhost:' + inPort);
+            
+            websocket.onopen = function() {
+                const register = {
+                    event: inRegisterEvent,
+                    uuid: inPropertyInspectorUUID
+                };
+                websocket.send(JSON.stringify(register));
+                
+                // Request current settings
+                websocket.send(JSON.stringify({
+                    event: 'getSettings',
+                    context: uuid
+                }));
+                
+                // Load templates
+                loadTemplates();
+            };
+            
+            websocket.onmessage = function(event) {
+                const jsonObj = JSON.parse(event.data);
+                
+                if (jsonObj.event === 'didReceiveSettings') {
+                    const settings = jsonObj.payload.settings;
+                    if (settings.templateName) {
+                        setTimeout(() => {
+                            document.getElementById('templateSelect').value = settings.templateName;
+                            updatePreview();
+                        }, 500);
+                    }
+                }
+            };
+        }
+
+        // Load templates from TimeDeck API
+        async function loadTemplates() {
+            try {
+                const response = await fetch('http://localhost:8080/api/templates');
+                const data = await response.json();
+                
+                if (data.success) {
+                    templates = data.data.templates;
+                    populateTemplateSelect();
+                } else {
+                    showError('Failed to load templates from TimeDeck');
+                }
+            } catch (error) {
+                showError('Could not connect to TimeDeck. Make sure TimeDeck is running.');
+            }
+        }
+
+        // Populate template select dropdown
+        function populateTemplateSelect() {
+            const select = document.getElementById('templateSelect');
+            
+            // Clear existing options
+            select.innerHTML = '';
+            
+            if (templates.length === 0) {
+                select.innerHTML = '<option value="" disabled selected>No templates found</option>';
+                return;
+            }
+            
+            // Add placeholder
+            select.innerHTML = '<option value="" disabled selected>Choose a template...</option>';
+            
+            // Add template options
+            templates.forEach(template => {
+                const option = document.createElement('option');
+                option.value = template.name;
+                option.textContent = `${template.emoji} ${template.name} (${template.category})`;
+                select.appendChild(option);
+            });
+            
+            // Add event listener
+            select.addEventListener('change', function() {
+                saveSettings();
+                updatePreview();
+            });
+        }
+
+        // Update template preview
+        function updatePreview() {
+            const selectedName = document.getElementById('templateSelect').value;
+            const preview = document.getElementById('templatePreview');
+            
+            if (!selectedName) {
+                preview.innerHTML = '<div class="loading">Select a template to see preview</div>';
+                return;
+            }
+            
+            const template = templates.find(t => t.name === selectedName);
+            if (!template) {
+                preview.innerHTML = '<div class="error">Template not found</div>';
+                return;
+            }
+            
+            preview.innerHTML = `
+                <div class="template-info">
+                    <div class="template-emoji">${template.emoji}</div>
+                    <div class="template-details">
+                        <div class="template-name">${template.name}</div>
+                        <div class="template-category">${template.category}</div>
+                    </div>
+                    ${template.isQuickAction ? '<div class="quick-action-badge">Quick Action</div>' : ''}
+                </div>
+            `;
+        }
+
+        // Show error message
+        function showError(message) {
+            const select = document.getElementById('templateSelect');
+            const preview = document.getElementById('templatePreview');
+            
+            select.innerHTML = '<option value="" disabled selected>Error loading templates</option>';
+            preview.innerHTML = `<div class="error">${message}</div>`;
+        }
+
+        // Save settings
+        function saveSettings() {
+            const templateName = document.getElementById('templateSelect').value;
+            
+            const payload = {
+                templateName: templateName
+            };
+            
+            if (websocket) {
+                websocket.send(JSON.stringify({
+                    event: 'setSettings',
+                    context: uuid,
+                    payload: payload
+                }));
+            }
+        }
+
+        console.log('Quick Template Property Inspector Loaded');
+    </script>
+</body>
+</html>

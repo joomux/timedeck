@@ -7,15 +7,20 @@ echo "🍎 Building native TimeDeck app..."
 
 APP_NAME="TimeDeck"
 BUILD_DIR="build"
-SWIFT_FILE="TimeDeck.swift"
+SWIFT_FILES="main.swift TimeDeckApp.swift ActivityTemplate.swift TemplateManager.swift ActivityTracker.swift NotificationManager.swift Analytics.swift HTTPServer.swift DataManager.swift AlertManager.swift Extensions.swift"
 
 # Clean previous builds
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
-# Compile Swift app
+# Compile Swift app with all modules
 echo "⚙️  Compiling Swift code..."
-swiftc -o "$BUILD_DIR/$APP_NAME" "$SWIFT_FILE"
+if [ -f "TimeDeck.entitlements" ]; then
+    echo "📋 Using entitlements file..."
+    swiftc -o "$BUILD_DIR/$APP_NAME" $SWIFT_FILES
+else
+    swiftc -o "$BUILD_DIR/$APP_NAME" $SWIFT_FILES
+fi
 
 # Create app bundle
 echo "📦 Creating app bundle..."
@@ -59,6 +64,25 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
     <string>TimeDeck 0.0.2 - Native Activity Tracking for Mac</string>
     <key>CFBundleIconFile</key>
     <string>TimeDeck.icns</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>TimeDeck URL Scheme</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>timedeck</string>
+            </array>
+            <key>CFBundleURLIconFile</key>
+            <string>TimeDeck.icns</string>
+        </dict>
+    </array>
+    <key>NSUserNotificationAlertStyle</key>
+    <string>alert</string>
+    <key>NSUserNotificationCenterEnableApplicationActivation</key>
+    <true/>
+    <key>NSUserNotificationCenterActivationPolicy</key>
+    <string>accessory</string>
 </dict>
 </plist>
 EOF
@@ -82,6 +106,17 @@ fi
 
 # Copy AppleScript files
 cp *.applescript "$APP_BUNDLE/Contents/Scripts/"
+
+# Copy StreamDeck shell scripts to Resources
+if [ -d "$APP_BUNDLE/Contents/Resources/StreamDeck" ]; then
+    rm -rf "$APP_BUNDLE/Contents/Resources/StreamDeck"
+fi
+mkdir -p "$APP_BUNDLE/Contents/Resources/StreamDeck"
+
+# Copy streamlined timedeck shell scripts
+cp timedeck_*.sh "$APP_BUNDLE/Contents/Resources/StreamDeck/" 2>/dev/null || true
+
+echo "✅ Added StreamDeck integration scripts"
 
 echo "✅ Native TimeDeck app created!"
 echo "📁 Location: $APP_BUNDLE"
