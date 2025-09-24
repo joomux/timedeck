@@ -210,22 +210,57 @@ class DataManager {
     func exportToCSV(startDate: Date, endDate: Date) -> URL? {
         let entries = getEntriesForDateRange(startDate, endDate)
         
-        var csvContent = "Date,Time,Action,Activity,Duration\n"
+        // Create timesheet-friendly CSV format
+        var csvContent = "Start Date/Time,Duration (HH:mm),Activity\n"
+        
+        let dateTimeFormatter = DateFormatter()
+        dateTimeFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        
+        // Process entries to extract completed activity sessions
+        var activities: [(startTime: Date, duration: TimeInterval, activity: String)] = []
+        var currentActivity: String?
+        var currentStartTime: Date?
+        
+        for entry in entries {
+            switch entry.action {
+            case .start, .quickStart:
+                if let activity = entry.activityName {
+                    currentActivity = activity
+                    currentStartTime = entry.timestamp
+                }
+            case .end:
+                if let activity = currentActivity,
+                   let startTime = currentStartTime {
+                    let duration = entry.timestamp.timeIntervalSince(startTime)
+                    activities.append((startTime: startTime, duration: duration, activity: activity))
+                }
+                currentActivity = nil
+                currentStartTime = nil
+            case .pause, .resume, .dayEnd, .freshStart, .idleDetected, .returnFromIdle:
+                // For timesheet export, we'll ignore these actions as they don't represent activity sessions
+                break
+            }
+        }
+        
+        // If there's an ongoing activity, include it with duration up to now
+        if let activity = currentActivity,
+           let startTime = currentStartTime {
+            let duration = Date().timeIntervalSince(startTime)
+            activities.append((startTime: startTime, duration: duration, activity: activity))
+        }
+        
+        // Write activity sessions to CSV
+        for activity in activities {
+            let startDateTime = dateTimeFormatter.string(from: activity.startTime)
+            let durationHHMM = formatDurationAsHHMM(activity.duration)
+            let activityName = activity.activity.replacingOccurrences(of: ",", with: ";") // Escape commas
+            
+            csvContent += "\(startDateTime),\(durationHHMM),\(activityName)\n"
+        }
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "HH:mm:ss"
-        
-        for entry in entries {
-            let date = dateFormatter.string(from: entry.timestamp)
-            let time = timeFormatter.string(from: entry.timestamp)
-            let duration = entry.duration.map { String(format: "%.0f", $0) } ?? ""
-            
-            csvContent += "\(date),\(time),\(entry.action.rawValue),\(entry.activityName ?? ""),\(duration)\n"
-        }
-        
-        let filename = "timedeck_export_\(dateFormatter.string(from: startDate))_to_\(dateFormatter.string(from: endDate)).csv"
+        let filename = "timedeck_timesheet_\(dateFormatter.string(from: startDate))_to_\(dateFormatter.string(from: endDate)).csv"
         let exportURL = exportDirectory.appendingPathComponent(filename)
         
         do {
@@ -235,6 +270,14 @@ class DataManager {
             print("❌ Export error: \(error)")
             return nil
         }
+    }
+    
+    // MARK: - Helper Functions
+    private func formatDurationAsHHMM(_ duration: TimeInterval) -> String {
+        let totalMinutes = Int(duration / 60)
+        let hours = totalMinutes / 60
+        let minutes = totalMinutes % 60
+        return String(format: "%d:%02d", hours, minutes)
     }
     
     // MARK: - Data Management

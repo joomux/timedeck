@@ -73,7 +73,9 @@ class Analytics {
     func showExportDialog() {
         let savePanel = NSSavePanel()
         savePanel.title = "Export Activity Data"
-        savePanel.nameFieldStringValue = "timedeck_export_\(DateFormatter.shortDate.string(from: Date()))"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        savePanel.nameFieldStringValue = "timedeck_export_\(dateFormatter.string(from: Date()))"
         
         if #available(macOS 12.0, *) {
             savePanel.allowedContentTypes = [UTType.commaSeparatedText, UTType.json]
@@ -168,7 +170,17 @@ class Analytics {
             .appendingPathComponent("TimeDeck")
             .appendingPathComponent("Exports")
         
-        let timestamp = DateFormatter.shortDate.string(from: Date())
+        // Ensure the export directory exists
+        do {
+            try FileManager.default.createDirectory(at: exportDir, withIntermediateDirectories: true, attributes: nil)
+        } catch {
+            showAlert(title: "❌ Report Error", message: "Failed to create export directory: \(error.localizedDescription)")
+            return
+        }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let timestamp = dateFormatter.string(from: Date())
         let reportFile = exportDir.appendingPathComponent("timedeck_report_\(timestamp).txt")
         
         do {
@@ -284,11 +296,14 @@ class Analytics {
     
     
     private func generateReportFromEntries(_ entries: [ActivityLogEntry]) -> String {
+        let displayDateFormatter = DateFormatter()
+        displayDateFormatter.dateFormat = "yyyy-MM-dd"
+        
         var report = """
         =====================================================
         📊 TIMEDECK ACTIVITY REPORT
         =====================================================
-        Generated: \(DateFormatter.shortDate.string(from: Date())) \(DateFormatter.shortTime.string(from: Date()))
+        Generated: \(displayDateFormatter.string(from: Date())) \(DateFormatter.shortTime.string(from: Date()))
         Report Period: Last 30 days
         
         📈 ACTIVITY SUMMARY:

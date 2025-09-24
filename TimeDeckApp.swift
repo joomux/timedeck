@@ -7,6 +7,10 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
     private var menu: NSMenu!
     
+    // Menu item references for updating
+    private var currentActivityMenuItem: NSMenuItem?
+    private var currentTimeMenuItem: NSMenuItem?
+    
     // Managers
     private let activityTracker = ActivityTracker.shared
     private let templateManager = TemplateManager.shared
@@ -77,6 +81,8 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
             handleStartFresh()
         case "templates":
             handleManageTemplates()
+        case "dialog", "new-dialog":
+            handleShowDialog()
         default:
             print("❌ Unknown URL command: \(host)")
             showURLSchemeError("Unknown command: \(host)")
@@ -143,6 +149,11 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         templateManager.showManageTemplates()
     }
     
+    private func handleShowDialog() {
+        print("🎯 Showing enhanced activity dialog")
+        showEnhancedActivityDialog()
+    }
+    
     private func showStatusAlert(_ message: String) {
         AlertManager.shared.showAlert(
             type: .info,
@@ -200,9 +211,14 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         
         // Current Activity Section
         if let activityInfo = activityTracker.getCurrentActivityInfo() {
-            menu.addItem(NSMenuItem(title: "🎯 Current: \(activityInfo.activity)", action: nil, keyEquivalent: ""))
-            menu.addItem(NSMenuItem(title: "⏱️ Time: \(activityInfo.timeString)", action: nil, keyEquivalent: ""))
+            currentActivityMenuItem = NSMenuItem(title: "🎯 Current: \(activityInfo.activity)", action: nil, keyEquivalent: "")
+            currentTimeMenuItem = NSMenuItem(title: "⏱️ Time: \(activityInfo.timeString)", action: nil, keyEquivalent: "")
+            menu.addItem(currentActivityMenuItem!)
+            menu.addItem(currentTimeMenuItem!)
             menu.addItem(NSMenuItem.separator())
+        } else {
+            currentActivityMenuItem = nil
+            currentTimeMenuItem = nil
         }
         
         // Quick Actions Section
@@ -217,41 +233,38 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem.separator())
         
         // Main Actions
-        menu.addItem(NSMenuItem(title: "🆕 New Activity", action: #selector(newActivity), keyEquivalent: "n"))
+        menu.addItem(NSMenuItem(title: "🆕 New Activity", action: #selector(newActivity), keyEquivalent: ""))
         
         if activityTracker.currentActivityType != nil {
-            menu.addItem(NSMenuItem(title: "⏸️ Pause/Resume", action: #selector(pauseResumeActivity), keyEquivalent: "p"))
+            menu.addItem(NSMenuItem(title: "⏸️ Pause/Resume", action: #selector(pauseResumeActivity), keyEquivalent: ""))
         }
         
-        menu.addItem(NSMenuItem(title: "⏹️ End Activity", action: #selector(endActivity), keyEquivalent: "e"))
-        menu.addItem(NSMenuItem(title: "📊 End Day", action: #selector(endDay), keyEquivalent: "d"))
+        menu.addItem(NSMenuItem(title: "⏹️ End Activity", action: #selector(endActivity), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "📊 End Day", action: #selector(endDay), keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
         
         
         // Analytics & Reports Section
         menu.addItem(NSMenuItem(title: "📈 Analytics & Reports", action: nil, keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "📊 Dashboard", action: #selector(showDashboard), keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: "📄 Generate Report", action: #selector(generateReport), keyEquivalent: "g"))
+        menu.addItem(NSMenuItem(title: "📄 Generate Report", action: #selector(generateReport), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "💾 Export Data", action: #selector(exportData), keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
         
         // Tools Section  
         menu.addItem(NSMenuItem(title: "🔧 Tools", action: nil, keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: "🏷️ Manage Templates", action: #selector(manageTemplates), keyEquivalent: "t"))
+        menu.addItem(NSMenuItem(title: "🏷️ Manage Templates", action: #selector(manageTemplates), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "🎮 Install StreamDeck Scripts", action: #selector(installStreamDeckScripts), keyEquivalent: ""))
         
-        // Debug idle detection (only show if activity is running)
-        if activityTracker.currentActivityType != nil && preferences.idleDetectionEnabled {
-            menu.addItem(NSMenuItem(title: "💤 Test Idle Detection", action: #selector(testIdleDetection), keyEquivalent: ""))
-        }
         
-        menu.addItem(NSMenuItem(title: "⚙️ Preferences", action: #selector(showPreferences), keyEquivalent: ","))
+        menu.addItem(NSMenuItem(title: "⚙️ Preferences", action: #selector(showPreferences), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "🧹 Start Fresh", action: #selector(startFresh), keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
         
         // Help & Info
         menu.addItem(NSMenuItem(title: "ℹ️ About", action: #selector(showAbout), keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: "🚪 Quit", action: #selector(quit), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: "☕ Support on Ko-Fi", action: #selector(openKoFi), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "🚪 Quit", action: #selector(quit), keyEquivalent: ""))
         
         statusItem.menu = menu
     }
@@ -270,9 +283,21 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     }
     
     private func startMenuBarUpdateTimer() {
-        // Update menu bar title every 30 seconds to keep duration current
+        // Update menu bar title and menu items every 30 seconds to keep duration current
         menuBarUpdateTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { _ in
             self.updateMenuBarTitle()
+            self.updateMenuItems()
+        }
+    }
+    
+    // MARK: - Menu Items Update
+    private func updateMenuItems() {
+        // Update the current activity time display in menu items
+        if let activityInfo = activityTracker.getCurrentActivityInfo(),
+           let currentActivityMenuItem = currentActivityMenuItem,
+           let currentTimeMenuItem = currentTimeMenuItem {
+            currentActivityMenuItem.title = "🎯 Current: \(activityInfo.activity)"
+            currentTimeMenuItem.title = "⏱️ Time: \(activityInfo.timeString)"
         }
     }
     
@@ -308,6 +333,7 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     @objc private func activityStateChanged() {
         setupMenuBar()
         updateMenuBarTitle()
+        updateMenuItems()
     }
     
     @objc private func showNewActivityDialogFromIdle() {
@@ -457,9 +483,6 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         activityTracker.startFresh()
     }
     
-    @objc private func testIdleDetection() {
-        activityTracker.manuallyTriggerIdleDetection()
-    }
     
     
     
@@ -572,42 +595,43 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     // MARK: - Help & Info
     @objc private func showAbout() {
         let alert = NSAlert()
-        alert.messageText = "TimeDeck Enhanced v1.0.0"
+        alert.messageText = "🎯 TimeDeck v0.0.3"
         alert.informativeText = """
-        🚀 Next-Level Activity Tracking for Mac
+        Your friendly menu bar activity tracker! 🚀
         
-        ✨ ENHANCED FEATURES:
-        • Smart activity templates with emojis
-        • Quick action shortcuts (⌘⇧A)
-        • Intelligent idle detection
-        • Advanced analytics dashboard
-        • Data export (CSV/JSON)
-        • Global keyboard shortcuts
-        • Beautiful notifications
+        ✨ What it does:
+        • Tracks what you're working on
+        • Shows you where your time goes
+        • Exports data for timesheets
+        • Lives quietly in your menu bar
         
-        🎯 PRODUCTIVITY TOOLS:
-        • Recent activity suggestions
-        • Break detection and reminders
-        • Daily/weekly summaries
+        📊 Three ways to wrap up:
+        • End Activity - Stop current task
+        • End Day - Stop + get daily summary
+        • Start Fresh - Clear everything (careful!)
         
-        📊 ANALYTICS:
-        • Time tracking insights
-        • Activity pattern analysis
-        • Productivity metrics
-        • Export capabilities
+        Made with ☕ and lots of ⏰ tracking
         
-        ⚡ QUICK SHORTCUTS:
-        • ⌘⇧A - New Activity
-        • ⌘N - New Activity (from menu)
-        • ⌘P - Pause/Resume
-        • ⌘E - End Activity
-        • ⌘T - Manage Templates
-        
-        Built with ❤️ for productivity enthusiasts
+        💙 Like TimeDeck? Buy me a coffee!
+        ko-fi.com/joomux
         """
         
-        alert.addButton(withTitle: "Awesome!")
-        alert.runModal()
+        alert.addButton(withTitle: "☕ Support")
+        alert.addButton(withTitle: "Got it! 👍")
+        
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            // Open Ko-fi link
+            if let url = URL(string: "https://ko-fi.com/joomux") {
+                NSWorkspace.shared.open(url)
+            }
+        }
+    }
+    
+    @objc private func openKoFi() {
+        if let url = URL(string: "https://ko-fi.com/joomux") {
+            NSWorkspace.shared.open(url)
+        }
     }
     
     @objc private func installStreamDeckScripts() {

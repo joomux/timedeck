@@ -2,11 +2,13 @@
 
 A revolutionary activity tracking system with an enhanced native Mac menu bar app featuring smart templates, intelligent break detection, pomodoro timers, real-time analytics, and much more!
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/A0A41LQYP0)
+
 ## 🚀 Quick Start
 
 ### Professional DMG Installer (Recommended)
-1. Download `TimeDeck-0.0.2.dmg`
-2. Open the DMG and drag `TimeDeck.app` to Applications
+1. Build DMG: `./create_dmg.sh`
+2. Open the generated DMG and drag `TimeDeck.app` to Applications
 3. Launch TimeDeck from Applications or Spotlight
 4. Your custom menu bar icon appears automatically
 5. Start tracking activities immediately - no setup required!
@@ -19,14 +21,24 @@ A revolutionary activity tracking system with an enhanced native Mac menu bar ap
 # Run the app
 open build/TimeDeck.app
 
-# Or compile directly
-swiftc -o TimeDeck TimeDeck.swift && ./TimeDeck
+# Or compile directly (run build script instead)
+./build_app.sh && open build/TimeDeck.app
 ```
 
 ## 📁 Project Structure
 
 **Core Application:**
-- `TimeDeck.swift` - Native Swift menu bar app with custom icons
+- `main.swift` - Application entry point
+- `TimeDeckApp.swift` - Main application delegate and UI coordination
+- `ActivityTracker.swift` - Activity tracking and logging
+- `TemplateManager.swift` - Template management and UI
+- `Analytics.swift` - Dashboard, reports, and data export
+- `NotificationManager.swift` - Notification handling
+- `HTTPServer.swift` - HTTP API for StreamDeck integration
+- `DataManager.swift` - Data persistence and management
+- `AlertManager.swift` - Centralized alert system
+- `ActivityTemplate.swift` - Data models and preferences
+- `Extensions.swift` - Utility extensions
 - `build_app.sh` - Build script for development
 - `create_dmg.sh` - DMG distribution builder
 
@@ -43,8 +55,7 @@ swiftc -o TimeDeck TimeDeck.swift && ./TimeDeck
 - `convert_icons.sh` - Convert source icons to all required formats
 
 **Distribution:**
-- `create_timedeck_dmg.sh` - Build professional DMG installer
-- `TimeDeck-1.0.0.dmg` - Ready-to-distribute Mac app
+- `create_dmg.sh` - Build professional DMG installer
 
 **Generated Files:**
 - `~/Desktop/timedeck_log.txt` - Activity data (created automatically)
@@ -227,7 +238,7 @@ For dynamic activities, create multiple buttons with different activity names:
 - "☕ Break" → `NewActivity.applescript "Break"`
 
 #### **Compatibility:**
-- ✅ **Native TimeDeck DMG** (`TimeDeck-0.0.2.dmg`)
+- ✅ **Native TimeDeck DMG** (`TimeDeck-0.0.3.dmg`)
 - ✅ **All installations** use identical AppleScript paths
 - ✅ **Works with any TimeDeck version**
 
@@ -266,7 +277,7 @@ Format: `[UNIX_TIMESTAMP] [ACTIVITY_NAME_OR_END]`
 ./convert_icons.sh
 
 # Build professional DMG installer
-./create_timedeck_dmg.sh
+./create_dmg.sh
 ```
 
 ### Icon Management
@@ -279,7 +290,7 @@ Format: `[UNIX_TIMESTAMP] [ACTIVITY_NAME_OR_END]`
 
 Access version and author information:
 - Click "About" in the TimeDeck menu
-- Shows version 0.0.2 and author: Jeremy Roberts
+- Shows version 0.0.3 and author: Jeremy Roberts
 - Lists all available menu shortcuts
 
 ### Requirements
@@ -298,13 +309,15 @@ Access version and author information:
 ## 📦 Distribution
 
 **For End Users:**
-- Share `TimeDeck-0.0.2.dmg`
+- Run `./create_dmg.sh` to build distribution DMG
+- Share the generated DMG file
 - Users drag to Applications and launch
 - Native Mac app experience, no dependencies
 
 **For Developers:**
 - Fork/clone repository
-- Run `./create_dmg.sh` to build
+- Run `./build_app.sh` for development builds
+- Run `./create_dmg.sh` to build distribution DMG
 - Customize icons in `assets/` folder
 - Pure Swift - no external dependencies
 

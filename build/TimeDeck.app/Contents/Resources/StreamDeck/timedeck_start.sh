@@ -16,33 +16,27 @@ EOF
 
 # Check if activity name was provided as parameter
 if [ -z "$1" ]; then
-    echo "🎯 TimeDeck - Getting activity name..."
+    echo "🎯 TimeDeck - Opening enhanced activity dialog..."
     
-    # Show input dialog to get activity name
-    activity_name=$(show_input_dialog)
+    # Use TimeDeck's enhanced dialog instead of simple input
+    open "timedeck://dialog"
     
-    # Check if user cancelled or entered empty name
-    if [ -z "$activity_name" ]; then
-        echo "❌ Cancelled or no activity name provided"
-        exit 1
-    fi
-    
-    echo "▶️ Starting activity: $activity_name"
+    echo "✅ Enhanced activity dialog opened!"
 else
     # Use the provided parameter
     activity_name="$1"
     echo "▶️ Starting activity: $activity_name"
+    
+    # URL encode the activity name for spaces and special characters
+    # Try python3 first, fallback to simple replacement
+    if command -v python3 >/dev/null 2>&1; then
+        encoded_name=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$activity_name'))")
+    else
+        # Simple fallback: replace spaces with %20
+        encoded_name=$(echo "$activity_name" | sed 's/ /%20/g')
+    fi
+    
+    open "timedeck://start/$encoded_name"
+    
+    echo "✅ Activity started successfully!"
 fi
-
-# URL encode the activity name for spaces and special characters
-# Try python3 first, fallback to simple replacement
-if command -v python3 >/dev/null 2>&1; then
-    encoded_name=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$activity_name'))")
-else
-    # Simple fallback: replace spaces with %20
-    encoded_name=$(echo "$activity_name" | sed 's/ /%20/g')
-fi
-
-open "timedeck://start/$encoded_name"
-
-echo "✅ Activity started successfully!"
