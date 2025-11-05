@@ -238,7 +238,7 @@ For dynamic activities, create multiple buttons with different activity names:
 - "☕ Break" → `NewActivity.applescript "Break"`
 
 #### **Compatibility:**
-- ✅ **Native TimeDeck DMG** (`TimeDeck-0.0.3.dmg`)
+- ✅ **Native TimeDeck DMG** (`TimeDeck-0.0.4.dmg`)
 - ✅ **All installations** use identical AppleScript paths
 - ✅ **Works with any TimeDeck version**
 
@@ -290,7 +290,7 @@ Format: `[UNIX_TIMESTAMP] [ACTIVITY_NAME_OR_END]`
 
 Access version and author information:
 - Click "About" in the TimeDeck menu
-- Shows version 0.0.3 and author: Jeremy Roberts
+- Shows version 0.0.4 and author: Jeremy Roberts
 - Lists all available menu shortcuts
 
 ### Requirements

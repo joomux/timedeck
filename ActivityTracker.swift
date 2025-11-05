@@ -86,7 +86,7 @@ class ActivityTracker {
         NotificationCenter.default.post(name: NSNotification.Name("ActivityStateChanged"), object: nil)
     }
     
-    func endCurrentActivity() {
+    func endCurrentActivity(endTime: Date? = nil) {
         guard let currentActivity = currentActivityType,
               let startTime = currentStartTime else {
             AlertManager.shared.showAlert(
@@ -97,7 +97,9 @@ class ActivityTracker {
             return
         }
         
-        let duration = Date().timeIntervalSince(startTime)
+        // Use provided endTime or current time
+        let actualEndTime = endTime ?? Date()
+        let duration = actualEndTime.timeIntervalSince(startTime)
         let hours = Int(duration) / 3600
         let minutes = Int(duration) % 3600 / 60
         
@@ -316,10 +318,12 @@ class ActivityTracker {
             )
             
         case .alertSecondButtonReturn:  // End activity
-            endCurrentActivity()
+            // Backdate the end time to when idle was first detected
+            endCurrentActivity(endTime: idleStartTime)
             
         case .alertThirdButtonReturn:  // Start new activity
-            endCurrentActivity()
+            // Backdate the end time to when idle was first detected
+            endCurrentActivity(endTime: idleStartTime)
             // Trigger new activity dialog
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 NotificationCenter.default.post(name: NSNotification.Name("ShowNewActivityDialog"), object: nil)
@@ -331,7 +335,8 @@ class ActivityTracker {
                 let breakDuration = Date().timeIntervalSince(idleStart)
                 dataManager.logActivity(.pause, activityName: "Break", duration: breakDuration)
             }
-            endCurrentActivity()
+            // Backdate the end time to when idle was first detected
+            endCurrentActivity(endTime: idleStartTime)
         }
         
         // Clear idle tracking

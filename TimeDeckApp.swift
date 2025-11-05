@@ -21,6 +21,10 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     
     // Timer for menu bar updates
     private var menuBarUpdateTimer: Timer?
+    private var iconVisibilityCheckTimer: Timer?
+    
+    // Cached icon for reuse
+    private var cachedMenuBarIcon: NSImage?
     
     // MARK: - Application Lifecycle
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -38,6 +42,9 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         // Start menu bar update timer
         startMenuBarUpdateTimer()
         
+        // Start visibility check timer
+        startIconVisibilityCheckTimer()
+        
         // Welcome message removed - no notifications for unsigned app
     }
     
@@ -45,6 +52,7 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         activityTracker.cleanup()
         httpServer.stopServer()
         menuBarUpdateTimer?.invalidate()
+        iconVisibilityCheckTimer?.invalidate()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -172,40 +180,67 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     
     // MARK: - Menu Bar Setup
     func setupMenuBar() {
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        // Only create statusItem once
+        if statusItem == nil {
+            print("🎯 Creating menu bar status item for the first time")
+            statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        } else {
+            print("✅ Status item already exists, updating it")
+        }
         
-        if let button = statusItem.button {
-            // Try to load the icon from bundle resources
+        updateStatusIcon()
+        rebuildMenu()
+    }
+    
+    // MARK: - Status Icon Management
+    private func updateStatusIcon() {
+        guard let button = statusItem.button else {
+            print("⚠️ WARNING: statusItem.button is nil")
+            return
+        }
+        
+        // Load icon only once and cache it
+        if cachedMenuBarIcon == nil {
             var image: NSImage?
             
             if let iconPath = Bundle.main.path(forResource: "menubar_icon", ofType: "png") {
-                print("DEBUG: Found icon at path: \(iconPath)")
+                print("📍 Found icon at path: \(iconPath)")
                 image = NSImage(contentsOfFile: iconPath)
                 if image != nil {
-                    print("DEBUG: Successfully loaded icon from file")
+                    print("✅ Successfully loaded icon from file")
                 } else {
-                    print("DEBUG: Failed to load icon from file")
+                    print("⚠️ Failed to load icon from file")
                 }
             } else {
-                print("DEBUG: Could not find menubar_icon.png in bundle")
+                print("⚠️ Could not find menubar_icon.png in bundle")
             }
             
             // Fallback to system icon if custom icon fails
             if image == nil {
-                print("DEBUG: Using system clock icon fallback")
+                print("📍 Using system clock icon fallback")
                 image = NSImage(systemSymbolName: "clock", accessibilityDescription: "TimeDeck")
             }
             
-            // Set the icon
-            if let image = image {
-                image.isTemplate = false
-                button.image = image
-                print("DEBUG: Icon set successfully (template mode: false)")
-            }
-            
-            // Set the title to show current activity alongside icon
-            updateMenuBarTitle()
+            cachedMenuBarIcon = image
         }
+        
+        // Set the icon
+        if let image = cachedMenuBarIcon {
+            // Don't use template mode to preserve the colored logo
+            image.isTemplate = false
+            // Set explicit size for consistency
+            image.size = NSSize(width: 18, height: 18)
+            button.image = image
+            print("✅ Icon set successfully (template mode: false, size: 18x18)")
+        }
+        
+        // Set the title to show current activity alongside icon
+        updateMenuBarTitle()
+    }
+    
+    // MARK: - Menu Building
+    private func rebuildMenu() {
+        print("🔄 Rebuilding menu")
         
         menu = NSMenu()
         
@@ -290,6 +325,39 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         }
     }
     
+    private func startIconVisibilityCheckTimer() {
+        // Check icon visibility every 5 seconds to ensure it hasn't disappeared
+        iconVisibilityCheckTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { _ in
+            self.ensureMenuBarIconVisible()
+        }
+        print("👀 Started icon visibility check timer (5 second interval)")
+    }
+    
+    // MARK: - Icon Visibility Check
+    private func ensureMenuBarIconVisible() {
+        // Check if statusItem or its button has become nil
+        if statusItem == nil {
+            print("🚨 CRITICAL: statusItem is nil, recreating!")
+            setupMenuBar()
+            return
+        }
+        
+        guard let button = statusItem.button else {
+            print("🚨 WARNING: statusItem.button is nil, attempting to restore icon")
+            updateStatusIcon()
+            return
+        }
+        
+        // Verify the icon is still set
+        if button.image == nil {
+            print("⚠️ WARNING: Menu bar icon image is missing, restoring it")
+            updateStatusIcon()
+        }
+        
+        // Optional: Log successful check (can be removed if too verbose)
+        // print("✅ Icon visibility check passed")
+    }
+    
     // MARK: - Menu Items Update
     private func updateMenuItems() {
         // Update the current activity time display in menu items
@@ -327,11 +395,13 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     }
     
     @objc private func templatesUpdated() {
-        setupMenuBar()
+        print("📢 Templates updated notification received")
+        rebuildMenu()
     }
     
     @objc private func activityStateChanged() {
-        setupMenuBar()
+        print("📢 Activity state changed notification received")
+        rebuildMenu()
         updateMenuBarTitle()
         updateMenuItems()
     }
@@ -595,7 +665,7 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     // MARK: - Help & Info
     @objc private func showAbout() {
         let alert = NSAlert()
-        alert.messageText = "🎯 TimeDeck v0.0.3"
+        alert.messageText = "🎯 TimeDeck v0.0.4"
         alert.informativeText = """
         Your friendly menu bar activity tracker! 🚀
         
