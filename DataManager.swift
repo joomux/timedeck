@@ -33,11 +33,12 @@ struct ActivityLogEntry: Codable {
 struct DailyActivityLog: Codable {
     let date: String // YYYY-MM-DD format
     var entries: [ActivityLogEntry]
-    let version: String = "1.0"
+    let version: String
     
     init(date: String) {
         self.date = date
         self.entries = []
+        self.version = "1.0"
     }
 }
 

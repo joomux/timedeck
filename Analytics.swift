@@ -17,6 +17,68 @@ class Analytics {
         AlertManager.shared.showDashboardAlert(todayData: todayData, weekData: weekData)
     }
     
+    // MARK: - End Day Summary
+    func showEndDaySummary() {
+        let (totalTime, activities) = dataManager.getDailyStats(for: Date())
+        
+        // Check if there's any data for today
+        guard totalTime > 0 || !activities.isEmpty else {
+            AlertManager.shared.showAlert(
+                type: .info,
+                title: "🌅 End of Day",
+                message: "No activities were tracked today.\n\nGreat work today! See you tomorrow! 👋"
+            )
+            return
+        }
+        
+        // Format the summary content
+        let summaryContent = formatEndDaySummary(totalTime: totalTime, activities: activities)
+        
+        // Show the summary alert
+        AlertManager.shared.showEndDaySummaryAlert(summaryContent: summaryContent)
+    }
+    
+    private func formatEndDaySummary(totalTime: TimeInterval, activities: [String: TimeInterval]) -> String {
+        var content = "Today's Activity Summary:\n\n"
+        
+        // Sort activities by duration (most to least)
+        let sortedActivities = activities.sorted { $0.value > $1.value }
+        
+        // Add each activity with its duration
+        for (activity, duration) in sortedActivities {
+            let hours = Int(duration) / 3600
+            let minutes = Int(duration) % 3600 / 60
+            let seconds = Int(duration) % 60
+            
+            if hours > 0 {
+                content += "• \(activity): \(hours)h \(minutes)m\n"
+            } else if minutes > 0 {
+                content += "• \(activity): \(minutes)m \(seconds)s\n"
+            } else {
+                content += "• \(activity): \(seconds)s\n"
+            }
+        }
+        
+        // Add total time
+        let totalHours = Int(totalTime) / 3600
+        let totalMinutes = Int(totalTime) % 3600 / 60
+        let totalSeconds = Int(totalTime) % 60
+        
+        content += "\n" + String(repeating: "─", count: 40) + "\n"
+        
+        if totalHours > 0 {
+            content += "Total tracked time: \(totalHours)h \(totalMinutes)m"
+        } else if totalMinutes > 0 {
+            content += "Total tracked time: \(totalMinutes)m \(totalSeconds)s"
+        } else {
+            content += "Total tracked time: \(totalSeconds)s"
+        }
+        
+        content += "\n\nGreat work today! 🎯"
+        
+        return content
+    }
+    
     private func getTodayActivityData() -> String {
         let (totalTime, activities) = dataManager.getDailyStats(for: Date())
         

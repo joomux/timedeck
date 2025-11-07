@@ -132,6 +132,14 @@ class AlertManager: NSObject {
         alert.runModal()
     }
     
+    // MARK: - End Day Summary Alert
+    func showEndDaySummaryAlert(summaryContent: String) {
+        let alert = createStyledAlert(type: .success, title: "🌅 End of Day Summary")
+        alert.informativeText = summaryContent
+        alert.addButton(withTitle: "✅ Great Work!")
+        alert.runModal()
+    }
+    
     // MARK: - Template Form Alert
     func showTemplateFormAlert(
         isEditing: Bool,

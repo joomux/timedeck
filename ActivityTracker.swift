@@ -125,28 +125,46 @@ class ActivityTracker {
         }
         
         dataManager.logActivity(.dayEnd)
-        NotificationManager.shared.showNotification(title: "🌅 Day Complete", message: "Great work today! All activities logged.")
+        
+        // Show end-of-day summary using the new Analytics method
+        Analytics.shared.showEndDaySummary()
     }
     
     func startFresh() {
+        // Show confirmation dialog before clearing data
+        DispatchQueue.main.async {
+            let response = AlertManager.shared.showAlert(
+                type: .warning,
+                title: "🧹 Start Fresh",
+                message: "Are you sure you want to clear all activity data and start fresh?\n\nThis will permanently delete all tracked activities and cannot be undone.",
+                primaryButton: "Clear All Data",
+                secondaryButton: "Cancel"
+            )
+            
+            // Only proceed if user confirms (primary button)
+            if response == .alertFirstButtonReturn {
+                self.performStartFresh()
+            }
+        }
+    }
+    
+    private func performStartFresh() {
+        // Clear current activity state
         currentActivityType = nil
         currentStartTime = nil
         isInBreak = false
         
-        // Clear log files natively instead of AppleScript
-        clearActivityLogs()
-        
-        // Notify UI to update
-        NotificationCenter.default.post(name: NSNotification.Name("ActivityStateChanged"), object: nil)
-    }
-    
-    private func clearActivityLogs() {
         // Clear all activity data using DataManager
         dataManager.clearAllData()
         
-        // Log the fresh start
-        dataManager.logActivity(.freshStart)
-        NotificationManager.shared.showNotification(title: "🧹 Fresh Start", message: "All activity logs cleared. Ready for a new session!")
+        // Show success notification (without logging a fresh start event)
+        NotificationManager.shared.showNotification(
+            title: "🧹 Fresh Start", 
+            message: "All activity logs cleared. Ready for a new session!"
+        )
+        
+        // Notify UI to update
+        NotificationCenter.default.post(name: NSNotification.Name("ActivityStateChanged"), object: nil)
     }
     
     // MARK: - Activity Status
