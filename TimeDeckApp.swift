@@ -99,22 +99,29 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     
     private func handleStartActivity(from url: URL) {
         let path = url.path
-        let activityName: String
+        let activityName: String?
         
         if path.count > 1 {
             // Remove leading slash and decode URL
-            activityName = String(path.dropFirst()).removingPercentEncoding ?? "New Activity"
+            activityName = String(path.dropFirst()).removingPercentEncoding
         } else if url.query != nil {
             // Handle query parameters like ?activity=Development
             let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            activityName = components?.queryItems?.first(where: { $0.name == "activity" })?.value ?? "New Activity"
+            activityName = components?.queryItems?.first(where: { $0.name == "activity" })?.value
         } else {
-            activityName = "New Activity"
+            // No activity name provided - show enhanced dialog
+            activityName = nil
         }
         
-        print("▶️ Starting activity: \(activityName)")
-        activityTracker.startActivity(name: activityName)
-        notificationManager.showNotification(title: "🚀 StreamDeck", message: "Started '\(activityName)'")
+        if let name = activityName, !name.isEmpty {
+            print("▶️ Starting activity: \(name)")
+            activityTracker.startActivity(name: name)
+            notificationManager.showNotification(title: "🚀 StreamDeck", message: "Started '\(name)'")
+        } else {
+            // Open the enhanced activity dialog for manual selection
+            print("🎯 Opening enhanced activity dialog")
+            showEnhancedActivityDialog()
+        }
     }
     
     private func handleEndActivity() {
