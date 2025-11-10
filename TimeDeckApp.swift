@@ -125,9 +125,8 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
     
     private func handlePauseResume() {
         print("⏸️ Toggling pause/resume")
+        // ActivityTracker.pauseResumeActivity() already handles notifications
         activityTracker.pauseResumeActivity()
-        let status = activityTracker.isInBreak ? "Paused" : "Resumed"
-        notificationManager.showNotification(title: "🚀 StreamDeck", message: "Activity \(status.lowercased())")
     }
     
     private func handleShowStatus() {
@@ -246,7 +245,8 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         
         // Current Activity Section
         if let activityInfo = activityTracker.getCurrentActivityInfo() {
-            currentActivityMenuItem = NSMenuItem(title: "🎯 Current: \(activityInfo.activity)", action: nil, keyEquivalent: "")
+            let pauseIndicator = activityTracker.isInBreak ? " ⏸️" : ""
+            currentActivityMenuItem = NSMenuItem(title: "🎯 Current: \(activityInfo.activity)\(pauseIndicator)", action: nil, keyEquivalent: "")
             currentTimeMenuItem = NSMenuItem(title: "⏱️ Time: \(activityInfo.timeString)", action: nil, keyEquivalent: "")
             menu.addItem(currentActivityMenuItem!)
             menu.addItem(currentTimeMenuItem!)
@@ -271,7 +271,8 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem(title: "🆕 New Activity", action: #selector(newActivity), keyEquivalent: ""))
         
         if activityTracker.currentActivityType != nil {
-            menu.addItem(NSMenuItem(title: "⏸️ Pause/Resume", action: #selector(pauseResumeActivity), keyEquivalent: ""))
+            let pauseTitle = activityTracker.isInBreak ? "▶️ Resume Activity" : "⏸️ Pause Activity"
+            menu.addItem(NSMenuItem(title: pauseTitle, action: #selector(pauseResumeActivity), keyEquivalent: ""))
         }
         
         menu.addItem(NSMenuItem(title: "⏹️ End Activity", action: #selector(endActivity), keyEquivalent: ""))
@@ -310,7 +311,8 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         
         if let activityInfo = activityTracker.getCurrentActivityInfo() {
             // Show activity name and duration alongside icon
-            button.title = " \(activityInfo.activity) (\(activityInfo.timeString))"
+            let pauseIndicator = activityTracker.isInBreak ? " ⏸️" : ""
+            button.title = " \(activityInfo.activity)\(pauseIndicator) (\(activityInfo.timeString))"
         } else {
             // No active activity - just show icon
             button.title = ""
@@ -364,7 +366,8 @@ class TimeDeckApp: NSObject, NSApplicationDelegate {
         if let activityInfo = activityTracker.getCurrentActivityInfo(),
            let currentActivityMenuItem = currentActivityMenuItem,
            let currentTimeMenuItem = currentTimeMenuItem {
-            currentActivityMenuItem.title = "🎯 Current: \(activityInfo.activity)"
+            let pauseIndicator = activityTracker.isInBreak ? " ⏸️" : ""
+            currentActivityMenuItem.title = "🎯 Current: \(activityInfo.activity)\(pauseIndicator)"
             currentTimeMenuItem.title = "⏱️ Time: \(activityInfo.timeString)"
         }
     }

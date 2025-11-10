@@ -70,16 +70,32 @@ class ActivityTracker {
     }
     
     func pauseResumeActivity() {
-        guard let currentActivity = currentActivityType else { return }
+        guard let currentActivity = currentActivityType else {
+            // No active activity - show helpful message
+            NotificationManager.shared.showNotification(
+                title: "⚠️ No Active Activity",
+                message: "Start an activity first before pausing",
+                fallbackToAlert: true
+            )
+            return
+        }
         
         if isInBreak {
             dataManager.logActivity(.resume, activityName: currentActivity)
             isInBreak = false
-            NotificationManager.shared.showNotification(title: "▶️ Resumed", message: "Back to \(currentActivity)")
+            NotificationManager.shared.showNotification(
+                title: "▶️ Resumed",
+                message: "Back to \(currentActivity)",
+                fallbackToAlert: true
+            )
         } else {
             dataManager.logActivity(.pause, activityName: currentActivity)
             isInBreak = true
-            NotificationManager.shared.showNotification(title: "⏸️ Paused", message: "Taking a break from \(currentActivity)")
+            NotificationManager.shared.showNotification(
+                title: "⏸️ Paused",
+                message: "Taking a break from \(currentActivity)",
+                fallbackToAlert: true
+            )
         }
         
         // Notify UI to update
