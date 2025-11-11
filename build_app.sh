@@ -83,6 +83,8 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
     <true/>
     <key>NSUserNotificationCenterActivationPolicy</key>
     <string>accessory</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>TimeDeck needs to monitor keyboard and mouse activity to detect when you're idle and help track your work time accurately.</string>
 </dict>
 </plist>
 EOF

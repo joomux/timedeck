@@ -207,6 +207,15 @@ class ActivityTracker {
     func startIdleDetection() {
         guard preferences.idleDetectionEnabled else { return }
         
+        // Check for Input Monitoring permissions
+        if !checkInputMonitoringPermission() {
+            print("⚠️ Input Monitoring permission not granted. Idle detection disabled.")
+            showInputMonitoringPermissionAlert()
+            return
+        }
+        
+        print("✅ Input Monitoring permission granted. Starting idle detection.")
+        
         // Start timer to check idle state every 30 seconds
         idleTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { _ in
             self.checkIdleState()
@@ -216,6 +225,44 @@ class ActivityTracker {
         startEventMonitoring()
     }
     
+    private func checkInputMonitoringPermission() -> Bool {
+        // Check if we have permission to monitor input events
+        // This uses CGPreflightPostEventAccess which checks for Accessibility/Input Monitoring permissions
+        let hasPermission = CGPreflightPostEventAccess()
+        return hasPermission
+    }
+    
+    private func showInputMonitoringPermissionAlert() {
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = "🔒 Input Monitoring Permission Required"
+            alert.informativeText = """
+            TimeDeck needs permission to monitor keyboard and mouse activity to detect when you're idle.
+            
+            To enable idle detection:
+            
+            1. Open System Settings (or System Preferences)
+            2. Go to Privacy & Security
+            3. Click on "Input Monitoring" (or "Accessibility" on older macOS)
+            4. Add TimeDeck to the list and enable it
+            5. Restart TimeDeck
+            
+            Without this permission, idle detection will not work.
+            """
+            alert.alertStyle = .informational
+            alert.addButton(withTitle: "Open System Settings")
+            alert.addButton(withTitle: "Skip")
+            
+            let response = alert.runModal()
+            if response == .alertFirstButtonReturn {
+                // Open System Settings to Privacy & Security
+                if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+        }
+    }
+    
     func stopIdleDetection() {
         idleTimer?.invalidate()
         idleTimer = nil
@@ -223,6 +270,8 @@ class ActivityTracker {
     }
     
     private func startEventMonitoring() {
+        print("🔍 Starting event monitoring for idle detection...")
+        
         // Monitor global events (when app is not focused)
         globalEventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [
             .keyDown, .keyUp,
@@ -232,6 +281,12 @@ class ActivityTracker {
             .scrollWheel
         ]) { [weak self] _ in
             self?.recordUserActivity()
+        }
+        
+        if globalEventMonitor != nil {
+            print("✅ Global event monitor started successfully")
+        } else {
+            print("❌ Failed to start global event monitor - permission may be denied")
         }
         
         // Monitor local events (when app is focused)
@@ -244,6 +299,12 @@ class ActivityTracker {
         ]) { [weak self] event in
             self?.recordUserActivity()
             return event
+        }
+        
+        if localEventMonitor != nil {
+            print("✅ Local event monitor started successfully")
+        } else {
+            print("❌ Failed to start local event monitor")
         }
     }
     
