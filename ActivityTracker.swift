@@ -18,6 +18,7 @@ class ActivityTracker {
     // Event monitoring
     private var globalEventMonitor: Any?
     private var localEventMonitor: Any?
+    private var hasShownPermissionAlert = false
     
     // Idle tracking
     private var idleStartTime: Date?
@@ -207,29 +208,15 @@ class ActivityTracker {
     func startIdleDetection() {
         guard preferences.idleDetectionEnabled else { return }
         
-        // Check for Input Monitoring permissions
-        if !checkInputMonitoringPermission() {
-            print("⚠️ Input Monitoring permission not granted. Idle detection disabled.")
-            showInputMonitoringPermissionAlert()
-            return
-        }
-        
-        print("✅ Input Monitoring permission granted. Starting idle detection.")
+        print("🔍 Starting idle detection...")
         
         // Start timer to check idle state every 30 seconds
         idleTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { _ in
             self.checkIdleState()
         }
         
-        // Start monitoring user input events
+        // Start monitoring user input events (this will check permissions internally)
         startEventMonitoring()
-    }
-    
-    private func checkInputMonitoringPermission() -> Bool {
-        // Check if we have permission to monitor input events
-        // This uses CGPreflightPostEventAccess which checks for Accessibility/Input Monitoring permissions
-        let hasPermission = CGPreflightPostEventAccess()
-        return hasPermission
     }
     
     private func showInputMonitoringPermissionAlert() {
@@ -284,9 +271,14 @@ class ActivityTracker {
         }
         
         if globalEventMonitor != nil {
-            print("✅ Global event monitor started successfully")
+            print("✅ Global event monitor started successfully - permissions granted")
         } else {
-            print("❌ Failed to start global event monitor - permission may be denied")
+            print("❌ Failed to start global event monitor - permission denied")
+            // Show permission alert only once per session
+            if !hasShownPermissionAlert {
+                hasShownPermissionAlert = true
+                showInputMonitoringPermissionAlert()
+            }
         }
         
         // Monitor local events (when app is focused)
